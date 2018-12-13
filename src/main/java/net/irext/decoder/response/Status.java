@@ -1,6 +1,6 @@
-package net.irext.collector.response;
+package net.irext.decoder.response;
 
-import net.irext.collector.Constants;
+import net.irext.decoder.Constants;
 
 /**
  * Filename:       Status.java

@@ -1,10 +1,10 @@
-package net.irext.collector.service;
+package net.irext.decoder.service;
 
-import net.irext.collector.mapper.CollectRemoteMapper;
-import net.irext.collector.model.CollectRemote;
-import net.irext.collector.response.CollectRemotesResponse;
-import net.irext.collector.response.ServiceResponse;
-import net.irext.collector.response.Status;
+import net.irext.decoder.mapper.CollectRemoteMapper;
+import net.irext.decoder.model.CollectRemote;
+import net.irext.decoder.response.CollectRemotesResponse;
+import net.irext.decoder.response.ServiceResponse;
+import net.irext.decoder.response.Status;
 import org.springframework.web.bind.annotation.*;
 
 /**

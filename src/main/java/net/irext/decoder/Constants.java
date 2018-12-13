@@ -1,4 +1,4 @@
-package net.irext.collector;
+package net.irext.decoder;
 
 /**
  * Filename:       Constants.java

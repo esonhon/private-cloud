@@ -1,6 +1,6 @@
-package net.irext.collector.businesslogic;
+package net.irext.decoder.businesslogic;
 
-import net.irext.collector.model.IRCode;
+import net.irext.decoder.model.IRCode;
 import org.springframework.stereotype.Controller;
 
 /**

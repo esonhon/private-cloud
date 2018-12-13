@@ -1,6 +1,6 @@
-package net.irext.collector.response;
+package net.irext.decoder.response;
 
-import net.irext.collector.model.CollectKey;
+import net.irext.decoder.model.CollectKey;
 
 import java.util.List;
 

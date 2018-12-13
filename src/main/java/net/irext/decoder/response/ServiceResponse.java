@@ -1,4 +1,4 @@
-package net.irext.collector.response;
+package net.irext.decoder.response;
 
 /**
  * Filename:       ServiceResponse.java

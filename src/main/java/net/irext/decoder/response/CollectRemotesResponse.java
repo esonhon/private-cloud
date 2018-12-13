@@ -1,6 +1,6 @@
-package net.irext.collector.response;
+package net.irext.decoder.response;
 
-import net.irext.collector.model.CollectRemote;
+import net.irext.decoder.model.CollectRemote;
 
 import java.util.List;
 

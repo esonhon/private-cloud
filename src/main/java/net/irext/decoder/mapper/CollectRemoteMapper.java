@@ -1,6 +1,6 @@
-package net.irext.collector.mapper;
+package net.irext.decoder.mapper;
 
-import net.irext.collector.model.CollectRemote;
+import net.irext.decoder.model.CollectRemote;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

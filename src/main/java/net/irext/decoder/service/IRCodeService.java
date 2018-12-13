@@ -1,9 +1,9 @@
-package net.irext.collector.service;
+package net.irext.decoder.service;
 
-import net.irext.collector.businesslogic.CollectCodeLogic;
-import net.irext.collector.model.IRCode;
-import net.irext.collector.response.ServiceResponse;
-import net.irext.collector.response.Status;
+import net.irext.decoder.businesslogic.CollectCodeLogic;
+import net.irext.decoder.model.IRCode;
+import net.irext.decoder.response.ServiceResponse;
+import net.irext.decoder.response.Status;
 import org.springframework.web.bind.annotation.*;
 
 /**

@@ -1,6 +1,6 @@
-package net.irext.collector;
+package net.irext.decoder;
 
-import net.irext.collector.model.CollectRemote;
+import net.irext.decoder.model.CollectRemote;
 import org.apache.ibatis.type.MappedTypes;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -17,7 +17,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 2018-12-08: created by strawmanbobi
  */
 @MappedTypes(CollectRemote.class)
-@MapperScan("net.irext.collector.mybatis.springbootmybatis.mapper")
+@MapperScan("net.irext.decoder.mybatis.springbootmybatis.mapper")
 @SpringBootApplication
 public class SpringBootMybatisApplication {
 

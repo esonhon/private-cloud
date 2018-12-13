@@ -1,4 +1,4 @@
-package net.irext.collector.model;
+package net.irext.decoder.model;
 
 /**
  * Filename:       CollectKey.java
