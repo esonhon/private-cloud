@@ -1,5 +1,6 @@
 package net.irext.decoder.businesslogic;
 
+import net.irext.decoder.model.RemoteIndex;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -13,22 +14,18 @@ import org.springframework.stereotype.Controller;
  * 2018-12-08: created by strawmanbobi
  */
 @Controller
-public class DecodeLogic {
+public class IndexLogic {
 
-    private static DecodeLogic decodeLogic;
+    private static IndexLogic indexLogic;
 
-    public static DecodeLogic getInstance() {
-        if (null == decodeLogic) {
-            decodeLogic = new DecodeLogic();
+    public static IndexLogic getInstance() {
+        if (null == indexLogic) {
+            indexLogic = new IndexLogic();
         }
-        return decodeLogic;
+        return indexLogic;
     }
 
-    public DecodeLogic() {
-
-    }
-
-    public int[] decode() {
+    public RemoteIndex getRemoteIndex(int indexId) {
         return null;
     }
 }

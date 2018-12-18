@@ -1,9 +1,15 @@
 package net.irext.decoder.service;
 
+import net.irext.decoder.businesslogic.DecodeLogic;
+import net.irext.decoder.businesslogic.IndexLogic;
 import net.irext.decoder.model.RemoteIndex;
+import net.irext.decoder.request.CloseRequest;
 import net.irext.decoder.request.DecodeRequest;
+import net.irext.decoder.request.OpenRequest;
 import net.irext.decoder.response.DecodeResponse;
+import net.irext.decoder.response.ServiceResponse;
 import net.irext.decoder.response.Status;
+import net.irext.decoder.service.base.AbstractBaseService;
 import net.irext.decodesdk.bean.ACStatus;
 import net.irext.decodesdk.utils.Constants;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +26,32 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/irext")
-public class IRDecodeService {
+public class IRDecodeService extends AbstractBaseService {
 
     public IRDecodeService() {
 
     }
 
-    @GetMapping("/decode")
+    @PostMapping("/open")
+    public ServiceResponse irOpen(@RequestBody OpenRequest openRequest) {
+        try {
+            int indexId = openRequest.getIndexId();
+
+            ServiceResponse response = new ServiceResponse();
+            RemoteIndex index = IndexLogic.getInstance().getRemoteIndex(indexId);
+            if (null == index) {
+                response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR, ""));
+                return response;
+            }
+
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getExceptionResponse(DecodeResponse.class);
+        }
+    }
+
+    @PostMapping("/decode")
     public DecodeResponse irDecode(@RequestBody DecodeRequest decodeRequest) {
         try {
             int indexId = decodeRequest.getIndexId();
@@ -34,18 +59,22 @@ public class IRDecodeService {
             int keyCode = decodeRequest.getKeyCode();
             int changeWindDir = decodeRequest.getChangeWindDir();
 
-            RemoteIndex index = indexingLogic.getRemoteIndex(indexId);
-            if (null == index) {
-                response.setEntity(null);
-                response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR, ""));
-                return response;
-            }
+            DecodeResponse response = new DecodeResponse();
+            int[] irArray = DecodeLogic.getInstance().decode();
 
-            byte []binaryContent = operationLogic.prepareBinary(indexId);
-            System.out.println("binary content fetched : " + binaryContent.length);
-            int []decoded = operationLogic.decodeIR(index.getCategoryId(), index.getSubCate(),
-                    binaryContent, acstatus, keyCode, changeWindDir);
-            response.setEntity(decoded);
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getExceptionResponse(DecodeResponse.class);
+        }
+    }
+
+    @PostMapping("/close")
+    public ServiceResponse irClose(@RequestBody CloseRequest closeRequest) {
+        try {
+
+            ServiceResponse response = new ServiceResponse();
+            DecodeLogic.getInstance().decode();
 
             return response;
         } catch (Exception e) {
