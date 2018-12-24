@@ -1,5 +1,6 @@
 package net.irext.decoder.businesslogic;
 
+import net.irext.decoder.mapper.RemoteIndexMapper;
 import net.irext.decoder.model.RemoteIndex;
 import org.springframework.stereotype.Controller;
 
@@ -18,14 +19,20 @@ public class IndexLogic {
 
     private static IndexLogic indexLogic;
 
-    public static IndexLogic getInstance() {
+    private RemoteIndexMapper remoteIndexMapper;
+
+    public static IndexLogic getInstance(RemoteIndexMapper remoteIndexMapper) {
         if (null == indexLogic) {
-            indexLogic = new IndexLogic();
+            indexLogic = new IndexLogic(remoteIndexMapper);
         }
         return indexLogic;
     }
 
+    public IndexLogic(RemoteIndexMapper remoteIndexMapper) {
+        this.remoteIndexMapper = remoteIndexMapper;
+    }
+
     public RemoteIndex getRemoteIndex(int indexId) {
-        return null;
+        return remoteIndexMapper.getRemoteIndexById(indexId);
     }
 }

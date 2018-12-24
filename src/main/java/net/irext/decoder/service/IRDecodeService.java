@@ -2,6 +2,7 @@ package net.irext.decoder.service;
 
 import net.irext.decoder.businesslogic.DecodeLogic;
 import net.irext.decoder.businesslogic.IndexLogic;
+import net.irext.decoder.mapper.RemoteIndexMapper;
 import net.irext.decoder.model.RemoteIndex;
 import net.irext.decoder.request.CloseRequest;
 import net.irext.decoder.request.DecodeRequest;
@@ -28,8 +29,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/irext")
 public class IRDecodeService extends AbstractBaseService {
 
-    public IRDecodeService() {
+    private RemoteIndexMapper remoteIndexMapper;
 
+    public IRDecodeService(RemoteIndexMapper remoteIndexMapper) {
+        this.remoteIndexMapper = remoteIndexMapper;
     }
 
     @PostMapping("/open")
@@ -38,7 +41,7 @@ public class IRDecodeService extends AbstractBaseService {
             int indexId = openRequest.getIndexId();
 
             ServiceResponse response = new ServiceResponse();
-            RemoteIndex index = IndexLogic.getInstance().getRemoteIndex(indexId);
+            RemoteIndex index = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(indexId);
             if (null == index) {
                 response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR, ""));
                 return response;

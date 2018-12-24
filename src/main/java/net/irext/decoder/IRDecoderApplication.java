@@ -1,5 +1,6 @@
 package net.irext.decoder;
 
+import net.irext.decoder.model.RemoteIndex;
 import org.apache.ibatis.type.MappedTypes;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -16,7 +17,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 2018-12-08: created by strawmanbobi
  */
 
-@MapperScan("net.irext.decoder.mybatis.springbootmybatis.mapper")
+@MappedTypes(RemoteIndex.class)
+@MapperScan("net.irext.decoder.mapper")
 @SpringBootApplication
 public class IRDecoderApplication {
 
