@@ -6,11 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="decode-web-service" />
+        <module name="decode-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="decode-web-service" target="1.8" />
+      <module name="decode-service" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
