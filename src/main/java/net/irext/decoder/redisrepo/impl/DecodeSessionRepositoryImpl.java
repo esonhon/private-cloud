@@ -1,6 +1,7 @@
-package net.irext.decoder.redisrepo;
+package net.irext.decoder.redisrepo.impl;
 
 import net.irext.decoder.model.DecodeSession;
+import net.irext.decoder.redisrepo.IDecodeSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -10,7 +11,7 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 
 /**
- * Filename:       RedisRepositoryImpl.java
+ * Filename:       IDecodeSessionRepositoryImpl.java
  * Revised:        Date: 2018-12-29
  * Revision:       Revision: 1.0
  * <p>
@@ -20,19 +21,19 @@ import java.util.Map;
  * 2018-12-29: created by strawmanbobi
  */
 @Repository
-public class RedisRepositoryImpl implements RedisRepository {
+public class DecodeSessionRepositoryImpl implements IDecodeSessionRepository {
     private static final String KEY = "SESSION_KEY";
 
     private RedisTemplate<String, Object> redisTemplate;
     private HashOperations hashOperations;
 
     @Autowired
-    public RedisRepositoryImpl(RedisTemplate<String, Object> redisTemplate){
+    public DecodeSessionRepositoryImpl(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
     @PostConstruct
-    private void init(){
+    private void init() {
         hashOperations = redisTemplate.opsForHash();
     }
 
@@ -44,13 +45,11 @@ public class RedisRepositoryImpl implements RedisRepository {
         hashOperations.delete(KEY, id);
     }
 
-    public DecodeSession find(final Integer id){
+    public DecodeSession find(final Integer id) {
         return (DecodeSession) hashOperations.get(KEY, id);
     }
 
-    public Map<Object, Object> findAllDecodeSessions(){
+    public Map<Object, Object> findAllDecodeSessions() {
         return hashOperations.entries(KEY);
     }
-
-
 }

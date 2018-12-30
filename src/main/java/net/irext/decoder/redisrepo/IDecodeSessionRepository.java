@@ -5,7 +5,7 @@ import net.irext.decoder.model.DecodeSession;
 import java.util.Map;
 
 /**
- * Filename:       RedisRepository.java
+ * Filename:       IDecodeSessionRepository.java
  * Revised:        Date: 2018-12-29
  * Revision:       Revision: 1.0
  * <p>
@@ -14,7 +14,7 @@ import java.util.Map;
  * Revision log:
  * 2018-12-29: created by strawmanbobi
  */
-public interface RedisRepository {
+public interface IDecodeSessionRepository {
 
     Map<Object, Object> findAllDecodeSessions();
 
