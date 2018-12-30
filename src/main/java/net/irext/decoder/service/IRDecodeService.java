@@ -4,6 +4,8 @@ import net.irext.decoder.businesslogic.DecodeLogic;
 import net.irext.decoder.businesslogic.IndexLogic;
 import net.irext.decoder.mapper.RemoteIndexMapper;
 import net.irext.decoder.model.RemoteIndex;
+import net.irext.decoder.redisrepo.IDecodeSessionRepository;
+import net.irext.decoder.redisrepo.IIRBinaryRepository;
 import net.irext.decoder.request.CloseRequest;
 import net.irext.decoder.request.DecodeRequest;
 import net.irext.decoder.request.OpenRequest;
@@ -13,6 +15,7 @@ import net.irext.decoder.response.Status;
 import net.irext.decoder.service.base.AbstractBaseService;
 import net.irext.decodesdk.bean.ACStatus;
 import net.irext.decodesdk.utils.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -31,6 +34,12 @@ public class IRDecodeService extends AbstractBaseService {
 
     private RemoteIndexMapper remoteIndexMapper;
 
+    @Autowired
+    private IIRBinaryRepository irBinaryRepository;
+
+    @Autowired
+    private IDecodeSessionRepository decodeSessionRepository;
+
     public IRDecodeService(RemoteIndexMapper remoteIndexMapper) {
         this.remoteIndexMapper = remoteIndexMapper;
     }
@@ -41,11 +50,13 @@ public class IRDecodeService extends AbstractBaseService {
             int indexId = openRequest.getIndexId();
 
             ServiceResponse response = new ServiceResponse();
-            RemoteIndex index = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(indexId);
-            if (null == index) {
+            RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(indexId);
+            if (null == remoteIndex) {
                 response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR, ""));
                 return response;
             }
+            byte []binaryContent = DecodeLogic.getInstance().openIRBinary(irBinaryRepository, remoteIndex);
+            System.out.println("binary content fetched : " + binaryContent.length);
 
             return response;
         } catch (Exception e) {
