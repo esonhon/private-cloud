@@ -4,7 +4,7 @@ import net.irext.decoder.alioss.OSSHelper;
 import net.irext.decoder.model.IRBinary;
 import net.irext.decoder.model.RemoteIndex;
 import net.irext.decoder.redisrepo.IIRBinaryRepository;
-import net.irext.decoder.utils.FileUtils;
+import net.irext.decoder.utils.FileUtil;
 import net.irext.decoder.utils.MD5Util;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +13,8 @@ import org.springframework.stereotype.Controller;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Filename:       CollectCodeLogic
@@ -117,8 +115,8 @@ public class DecodeLogic {
             String ossChecksum =
                     MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5").digest(binaries)).toUpperCase();
             if (ossChecksum.equals(checksum)) {
-                FileUtils.createDirs(downloadPath);
-                if (FileUtils.write(binFile, binaries)) {
+                FileUtil.createDirs(downloadPath);
+                if (FileUtil.write(binFile, binaries)) {
                     return new FileInputStream(binFile);
                 } else {
                     System.out.println("fatal : write file to local path failed");

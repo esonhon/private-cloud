@@ -3,7 +3,7 @@ package net.irext.decoder.utils;
 import java.io.*;
 
 /**
- * Filename:       FileUtils.java
+ * Filename:       FileUtil.java
  * Revised:        Date: 2017-04-14
  * Revision:       Revision: 1.0
  * <p>
@@ -12,7 +12,7 @@ import java.io.*;
  * Revision log:
  * 2017-04-14: created by strawmanbobi
  */
-public class FileUtils {
+public class FileUtil {
 
     public static boolean write(File file, byte[] binaries) {
         if (null == file) {

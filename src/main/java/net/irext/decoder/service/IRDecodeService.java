@@ -13,6 +13,7 @@ import net.irext.decoder.response.DecodeResponse;
 import net.irext.decoder.response.ServiceResponse;
 import net.irext.decoder.response.Status;
 import net.irext.decoder.service.base.AbstractBaseService;
+import net.irext.decoder.utils.LoggerUtil;
 import net.irext.decodesdk.bean.ACStatus;
 import net.irext.decodesdk.utils.Constants;
 import org.apache.logging.log4j.LogManager;
@@ -34,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/irext")
 public class IRDecodeService extends AbstractBaseService {
 
-    Logger logger = LogManager.getLogger(IRDecodeService.class);
+    private static final String TAG = IRDecodeService.class.getSimpleName();
 
     private RemoteIndexMapper remoteIndexMapper;
 
@@ -53,7 +54,7 @@ public class IRDecodeService extends AbstractBaseService {
         try {
             int remoteIndexId = openRequest.getRemoteIndexId();
 
-            logger.trace("irOpen API called : " + remoteIndexId);
+            LoggerUtil.getInstance().trace(TAG,"irOpen API called : " + remoteIndexId);
 
             ServiceResponse response = new ServiceResponse();
             RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
