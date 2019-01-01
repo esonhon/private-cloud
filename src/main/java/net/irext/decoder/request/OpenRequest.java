@@ -12,22 +12,22 @@ package net.irext.decoder.request;
  */
 public class OpenRequest {
 
-    private int indexId;
+    private int remoteIndexId;
 
-    public OpenRequest(int indexId) {
-        this.indexId = indexId;
+    public OpenRequest(int remoteIndexId) {
+        this.remoteIndexId = remoteIndexId;
     }
 
     public OpenRequest() {
 
     }
 
-    public int getIndexId() {
-        return indexId;
+    public int getRemoteIndexId() {
+        return remoteIndexId;
     }
 
-    public void setIndexId(int indexId) {
-        this.indexId = indexId;
+    public void setRemoteIndexId(int remoteIndexId) {
+        this.remoteIndexId = remoteIndexId;
     }
 
 }

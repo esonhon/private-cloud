@@ -15,6 +15,8 @@ import net.irext.decoder.response.Status;
 import net.irext.decoder.service.base.AbstractBaseService;
 import net.irext.decodesdk.bean.ACStatus;
 import net.irext.decodesdk.utils.Constants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/irext")
 public class IRDecodeService extends AbstractBaseService {
 
+    Logger logger = LogManager.getLogger(IRDecodeService.class);
+
     private RemoteIndexMapper remoteIndexMapper;
 
     @Autowired
@@ -47,10 +51,12 @@ public class IRDecodeService extends AbstractBaseService {
     @PostMapping("/open")
     public ServiceResponse irOpen(@RequestBody OpenRequest openRequest) {
         try {
-            int indexId = openRequest.getIndexId();
+            int remoteIndexId = openRequest.getRemoteIndexId();
+
+            logger.trace("irOpen API called : " + remoteIndexId);
 
             ServiceResponse response = new ServiceResponse();
-            RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(indexId);
+            RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
             if (null == remoteIndex) {
                 response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR, ""));
                 return response;
