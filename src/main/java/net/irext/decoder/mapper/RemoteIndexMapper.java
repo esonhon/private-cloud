@@ -2,7 +2,10 @@ package net.irext.decoder.mapper;
 
 import net.irext.decoder.model.RemoteIndex;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.ResultMap;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * Filename:       RemoteIndexMapper.java
@@ -18,5 +21,6 @@ import org.apache.ibatis.annotations.Select;
 public interface RemoteIndexMapper {
 
     @Select("SELECT * FROM remote_index WHERE id = #{id}")
-    RemoteIndex getRemoteIndexById(int id);
+    @ResultMap("BaseResultMap")
+    List<RemoteIndex> getRemoteIndexById(int id);
 }

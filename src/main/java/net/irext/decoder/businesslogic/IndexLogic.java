@@ -4,6 +4,8 @@ import net.irext.decoder.mapper.RemoteIndexMapper;
 import net.irext.decoder.model.RemoteIndex;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 /**
  * Filename:       CollectCodeLogic
  * Revised:        Date: 2018-12-08
@@ -33,6 +35,10 @@ public class IndexLogic {
     }
 
     public RemoteIndex getRemoteIndex(int indexId) {
-        return remoteIndexMapper.getRemoteIndexById(indexId);
+        List<RemoteIndex> remoteIndexList = remoteIndexMapper.getRemoteIndexById(indexId);
+        if (null != remoteIndexList && remoteIndexList.size() > 0) {
+            return remoteIndexList.get(0);
+        }
+        return null;
     }
 }

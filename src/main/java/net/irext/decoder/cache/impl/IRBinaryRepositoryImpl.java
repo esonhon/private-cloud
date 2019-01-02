@@ -1,13 +1,14 @@
-package net.irext.decoder.redisrepo.impl;
+package net.irext.decoder.cache.impl;
 
 import net.irext.decoder.model.IRBinary;
-import net.irext.decoder.redisrepo.IIRBinaryRepository;
+import net.irext.decoder.cache.IIRBinaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -22,8 +23,9 @@ import java.util.Map;
  */
 @Repository
 public class IRBinaryRepositoryImpl implements IIRBinaryRepository {
-    private static final String KEY = "SESSION_KEY";
+    private static final String KEY = "BINARY_KEY";
 
+    @Resource(name="redisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
     private HashOperations hashOperations;
 

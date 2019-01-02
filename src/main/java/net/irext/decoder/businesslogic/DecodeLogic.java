@@ -3,12 +3,11 @@ package net.irext.decoder.businesslogic;
 import net.irext.decoder.alioss.OSSHelper;
 import net.irext.decoder.model.IRBinary;
 import net.irext.decoder.model.RemoteIndex;
-import net.irext.decoder.redisrepo.IIRBinaryRepository;
+import net.irext.decoder.cache.IIRBinaryRepository;
 import net.irext.decoder.utils.FileUtil;
+import net.irext.decoder.utils.LoggerUtil;
 import net.irext.decoder.utils.MD5Util;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -26,16 +25,14 @@ import java.security.MessageDigest;
  * Revision log:
  * 2018-12-08: created by strawmanbobi
  */
-@Controller
 public class DecodeLogic {
+
+    private static final String TAG = DecodeLogic.class.getSimpleName();
 
     private static final String IR_BIN_FILE_PREFIX = "irda_";
     private static final String IR_BIN_FILE_SUFFIX = ".bin";
 
     private static DecodeLogic decodeLogic;
-
-    @Autowired
-    private ServletContext context;
 
     public static DecodeLogic getInstance() {
         if (null == decodeLogic) {
@@ -48,13 +45,17 @@ public class DecodeLogic {
 
     }
 
-    public byte[] openIRBinary(IIRBinaryRepository irBinaryRepository, RemoteIndex remoteIndex) {
+    public byte[] openIRBinary(ServletContext context, IIRBinaryRepository irBinaryRepository,
+                               RemoteIndex remoteIndex) {
         if (null == remoteIndex) {
             return null;
         }
         try {
             String checksum = remoteIndex.getBinaryMd5().toUpperCase();
             String remoteMap = remoteIndex.getRemoteMap();
+
+            LoggerUtil.getInstance().trace(TAG, "checksum for remoteIndex " +
+                    remoteIndex.getId() + " = " + checksum);
 
             IRBinary irBinary = irBinaryRepository.find(remoteIndex.getId());
             if (null != irBinary) {
@@ -63,7 +64,8 @@ public class DecodeLogic {
                     System.out.println("binary content fetched from redis : " + binaries.length);
                     // validate binary content
                     String cachedChecksum =
-                            MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5").digest(binaries)).toUpperCase();
+                            MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5")
+                                    .digest(binaries)).toUpperCase();
                     if (cachedChecksum.equals(checksum)) {
                         return binaries;
                     }
@@ -71,17 +73,21 @@ public class DecodeLogic {
             }
 
             // otherwise, read from file or OSS
-            String downloadPath = context.getRealPath("") + "bin_cache" + File.separator;
-            String fileName = IR_BIN_FILE_PREFIX + remoteMap + IR_BIN_FILE_SUFFIX;
-            String localFilePath = downloadPath + fileName;
+            if (null != context) {
+                String downloadPath = context.getRealPath("") + "bin_cache" + File.separator;
+                String fileName = IR_BIN_FILE_PREFIX + remoteMap + IR_BIN_FILE_SUFFIX;
+                String localFilePath = downloadPath + fileName;
 
-            File binFile = new File(localFilePath);
-            FileInputStream fin = getFile(binFile, downloadPath, fileName, checksum);
-            if (null != fin) {
-                byte[] binaries = IOUtils.toByteArray(fin);
-                System.out.println("binary content get, save it to redis");
-                irBinaryRepository.add(new IRBinary(remoteIndex.getId(), binaries));
-                return binaries;
+                File binFile = new File(localFilePath);
+                FileInputStream fin = getFile(binFile, downloadPath, fileName, checksum);
+                if (null != fin) {
+                    byte[] binaries = IOUtils.toByteArray(fin);
+                    System.out.println("binary content get, save it to redis");
+                    irBinaryRepository.add(new IRBinary(remoteIndex.getId(), binaries));
+                    return binaries;
+                }
+            } else {
+                LoggerUtil.getInstance().trace(TAG, "servlet context is null");
             }
         } catch (Exception ex) {
             ex.printStackTrace();
