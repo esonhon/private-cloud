@@ -41,10 +41,6 @@ public class DecodeLogic {
         return decodeLogic;
     }
 
-    public DecodeLogic() {
-
-    }
-
     public byte[] openIRBinary(ServletContext context, IIRBinaryRepository irBinaryRepository,
                                RemoteIndex remoteIndex) {
         if (null == remoteIndex) {
@@ -57,18 +53,15 @@ public class DecodeLogic {
             LoggerUtil.getInstance().trace(TAG, "checksum for remoteIndex " +
                     remoteIndex.getId() + " = " + checksum);
 
-            IRBinary irBinary = irBinaryRepository.find(remoteIndex.getId());
-            if (null != irBinary) {
-                byte[] binaries = irBinary.getBinary();
-                if (null != binaries) {
-                    System.out.println("binary content fetched from redis : " + binaries.length);
-                    // validate binary content
-                    String cachedChecksum =
-                            MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5")
-                                    .digest(binaries)).toUpperCase();
-                    if (cachedChecksum.equals(checksum)) {
-                        return binaries;
-                    }
+            byte[] binaries = irBinaryRepository.find(remoteIndex.getId());
+            if (null != binaries) {
+                LoggerUtil.getInstance().trace(TAG, "binary content fetched from redis : " + binaries.length);
+                // validate binary content
+                String cachedChecksum =
+                        MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5")
+                                .digest(binaries)).toUpperCase();
+                if (cachedChecksum.equals(checksum)) {
+                    return binaries;
                 }
             }
 
@@ -81,9 +74,10 @@ public class DecodeLogic {
                 File binFile = new File(localFilePath);
                 FileInputStream fin = getFile(binFile, downloadPath, fileName, checksum);
                 if (null != fin) {
-                    byte[] binaries = IOUtils.toByteArray(fin);
-                    System.out.println("binary content get, save it to redis");
-                    irBinaryRepository.add(new IRBinary(remoteIndex.getId(), binaries));
+                    byte[] newBinaries = IOUtils.toByteArray(fin);
+                    LoggerUtil.getInstance().trace(TAG, "binary content get, save it to redis");
+
+                    irBinaryRepository.add(remoteIndex.getId(), newBinaries);
                     return binaries;
                 }
             } else {

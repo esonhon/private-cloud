@@ -18,9 +18,9 @@ public interface IIRBinaryRepository {
 
     Map<Object, Object> findAllIRBinaries();
 
-    void add(IRBinary irBinary);
+    void add(Integer id, byte[] binaries);
 
     void delete(Integer id);
 
-    IRBinary find(Integer id);
+    byte[] find(Integer id);
 }

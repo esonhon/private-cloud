@@ -1,6 +1,5 @@
 package net.irext.decoder.cache.impl;
 
-import net.irext.decoder.model.IRBinary;
 import net.irext.decoder.cache.IIRBinaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
@@ -39,16 +38,16 @@ public class IRBinaryRepositoryImpl implements IIRBinaryRepository {
         hashOperations = redisTemplate.opsForHash();
     }
 
-    public void add(final IRBinary IRBinary) {
-        hashOperations.put(KEY, IRBinary.getId(), IRBinary.getBinary());
+    public void add(Integer id, byte[] binaries) {
+        hashOperations.put(KEY, id, binaries);
     }
 
     public void delete(final Integer id) {
         hashOperations.delete(KEY, id);
     }
 
-    public IRBinary find(final Integer id) {
-        return (IRBinary) hashOperations.get(KEY, id);
+    public byte[] find(final Integer id) {
+        return (byte[])hashOperations.get(KEY, id);
     }
 
     public Map<Object, Object> findAllIRBinaries() {
