@@ -18,6 +18,7 @@ public class DecodeRequest {
     private ACStatus acStatus;
     private int keyCode;
     private int changeWindDir;
+    private String sessionId;
 
     public DecodeRequest(int indexId, ACStatus acStatus, int keyCode, int changeWindDir) {
         this.indexId = indexId;
@@ -60,5 +61,13 @@ public class DecodeRequest {
 
     public void setChangeWindDir(int changeWindDir) {
         this.changeWindDir = changeWindDir;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 }

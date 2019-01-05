@@ -3,6 +3,7 @@ package net.irext.decoder.service;
 import net.irext.decoder.businesslogic.DecodeLogic;
 import net.irext.decoder.businesslogic.IndexLogic;
 import net.irext.decoder.mapper.RemoteIndexMapper;
+import net.irext.decoder.model.DecodeSession;
 import net.irext.decoder.model.RemoteIndex;
 import net.irext.decoder.cache.IDecodeSessionRepository;
 import net.irext.decoder.cache.IIRBinaryRepository;
@@ -12,8 +13,10 @@ import net.irext.decoder.request.OpenRequest;
 import net.irext.decoder.response.DecodeResponse;
 import net.irext.decoder.response.ServiceResponse;
 import net.irext.decoder.response.Status;
+import net.irext.decoder.response.StringResponse;
 import net.irext.decoder.service.base.AbstractBaseService;
 import net.irext.decoder.utils.LoggerUtil;
+import net.irext.decoder.utils.MD5Util;
 import net.irext.decodesdk.bean.ACStatus;
 import net.irext.decodesdk.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 
 /**
  * Filename:       IRDecodeService.java
@@ -55,16 +60,17 @@ public class IRDecodeService extends AbstractBaseService {
     }
 
     @PostMapping("/open")
-    public ServiceResponse irOpen(@RequestBody OpenRequest openRequest) {
+    public StringResponse irOpen(HttpServletRequest request, @RequestBody OpenRequest openRequest) {
         try {
             int remoteIndexId = openRequest.getRemoteIndexId();
 
             LoggerUtil.getInstance().trace(TAG,"irOpen API called : " + remoteIndexId);
 
-            ServiceResponse response = new ServiceResponse();
+            StringResponse response = new StringResponse();
             RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
             if (null == remoteIndex) {
                 response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR, ""));
+                response.setEntity(null);
                 return response;
             } else {
                 LoggerUtil.getInstance().trace(TAG, "remoteIndex get : " + remoteIndex.getId() + ", " +
@@ -74,12 +80,21 @@ public class IRDecodeService extends AbstractBaseService {
 
             if (null != binaryContent) {
                 LoggerUtil.getInstance().trace(TAG,"binary content fetched : " + binaryContent.length);
+                // construct a session with this binary
+                String address = request.getRemoteAddr();
+                LoggerUtil.getInstance().trace(TAG, "request Address = " + address);
+                String timeStamp =
+                        new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+                String sessionId = MD5Util.MD5Encode(address + timeStamp, null);
+                DecodeSession decodeSession = new DecodeSession(sessionId, remoteIndex.getId());
+                decodeSessionRepository.add(decodeSession.getSessionId(), decodeSession.getBinaryId());
+                response.setEntity(decodeSession.getSessionId());
             }
             response.setStatus(new Status(Constants.ERROR_CODE_SUCCESS, ""));
             return response;
         } catch (Exception e) {
             e.printStackTrace();
-            return getExceptionResponse(DecodeResponse.class);
+            return getExceptionResponse(StringResponse.class);
         }
     }
 
@@ -90,6 +105,7 @@ public class IRDecodeService extends AbstractBaseService {
             ACStatus acstatus = decodeRequest.getAcStatus();
             int keyCode = decodeRequest.getKeyCode();
             int changeWindDir = decodeRequest.getChangeWindDir();
+            String sessionId = decodeRequest.getSessionId();
 
             DecodeResponse response = new DecodeResponse();
             int[] irArray = DecodeLogic.getInstance().decode();

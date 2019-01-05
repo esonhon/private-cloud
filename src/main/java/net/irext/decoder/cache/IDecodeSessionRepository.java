@@ -18,10 +18,10 @@ public interface IDecodeSessionRepository {
 
     Map<Object, Object> findAllDecodeSessions();
 
-    void add(DecodeSession decodeSession);
+    void add(String decodeSessionId, Integer remoteId);
 
-    void delete(Integer id);
+    void delete(String decodeSessionId);
 
-    DecodeSession find(Integer id);
+    Integer find(String decodeSessionId);
 
 }

@@ -12,31 +12,31 @@ package net.irext.decoder.model;
  */
 public class DecodeSession {
 
-    private Integer id;
-    private String name;
+    private String sessionId;
+    private Integer binaryId;
 
-    public DecodeSession(Integer id, String name) {
-        this.id = id;
-        this.name = name;
+    public DecodeSession(String sessionId, Integer binaryId) {
+        this.sessionId = sessionId;
+        this.binaryId = binaryId;
     }
 
     public DecodeSession() {
 
     }
 
-    public Integer getId() {
-        return id;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
 
-    public String getName() {
-        return name;
+    public Integer getBinaryId() {
+        return binaryId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBinaryId(Integer binaryId) {
+        this.binaryId = binaryId;
     }
 }

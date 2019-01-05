@@ -37,16 +37,16 @@ public class DecodeSessionRepositoryImpl implements IDecodeSessionRepository {
         hashOperations = redisTemplate.opsForHash();
     }
 
-    public void add(final DecodeSession decodeSession) {
-        hashOperations.put(KEY, decodeSession.getId(), decodeSession.getName());
+    public void add(final String decodeSessionId, Integer binaryId) {
+        hashOperations.put(KEY, decodeSessionId, binaryId);
     }
 
-    public void delete(final Integer id) {
-        hashOperations.delete(KEY, id);
+    public void delete(String decodeSessionId) {
+        hashOperations.delete(KEY, decodeSessionId);
     }
 
-    public DecodeSession find(final Integer id) {
-        return (DecodeSession) hashOperations.get(KEY, id);
+    public Integer find(String decodeSessionId) {
+        return (Integer) hashOperations.get(KEY, decodeSessionId);
     }
 
     public Map<Object, Object> findAllDecodeSessions() {
