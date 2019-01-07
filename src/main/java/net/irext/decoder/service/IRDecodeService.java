@@ -102,13 +102,20 @@ public class IRDecodeService extends AbstractBaseService {
     public DecodeResponse irDecode(@RequestBody DecodeRequest decodeRequest) {
         try {
             int indexId = decodeRequest.getIndexId();
-            ACStatus acstatus = decodeRequest.getAcStatus();
+            ACStatus acStatus = decodeRequest.getAcStatus();
             int keyCode = decodeRequest.getKeyCode();
             int changeWindDir = decodeRequest.getChangeWindDir();
             String sessionId = decodeRequest.getSessionId();
 
             DecodeResponse response = new DecodeResponse();
-            int[] irArray = DecodeLogic.getInstance().decode();
+            int[] irArray = DecodeLogic.getInstance().decode(
+                    irBinaryRepository,
+                    decodeSessionRepository,
+                    sessionId,
+                    indexId,
+                    acStatus,
+                    keyCode,
+                    changeWindDir);
 
             return response;
         } catch (Exception e) {
@@ -120,10 +127,9 @@ public class IRDecodeService extends AbstractBaseService {
     @PostMapping("/close")
     public ServiceResponse irClose(@RequestBody CloseRequest closeRequest) {
         try {
-
+            String sessionId = closeRequest.getSessionId();
             ServiceResponse response = new ServiceResponse();
-            DecodeLogic.getInstance().decode();
-
+            DecodeLogic.getInstance().close(sessionId);
             return response;
         } catch (Exception e) {
             e.printStackTrace();

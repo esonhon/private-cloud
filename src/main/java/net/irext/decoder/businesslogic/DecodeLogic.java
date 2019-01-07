@@ -1,12 +1,15 @@
 package net.irext.decoder.businesslogic;
 
 import net.irext.decoder.alioss.OSSHelper;
+import net.irext.decoder.cache.IDecodeSessionRepository;
 import net.irext.decoder.model.IRBinary;
 import net.irext.decoder.model.RemoteIndex;
 import net.irext.decoder.cache.IIRBinaryRepository;
 import net.irext.decoder.utils.FileUtil;
 import net.irext.decoder.utils.LoggerUtil;
 import net.irext.decoder.utils.MD5Util;
+import net.irext.decodesdk.IRDecode;
+import net.irext.decodesdk.bean.ACStatus;
 import org.apache.commons.io.IOUtils;
 
 import javax.servlet.ServletContext;
@@ -90,8 +93,29 @@ public class DecodeLogic {
         return null;
     }
 
-    public int[] decode() {
+    public int[] decode(IIRBinaryRepository irBinaryRepository, IDecodeSessionRepository decodeSessionRepository,
+            String sessionId, int remoteIndexId, ACStatus acStatus, int keyCode, int changeWindDirection) {
+        // since the binary is already opened and probably cached to redis, we just need to load it
+        Integer cachedRemoteIndexId = decodeSessionRepository.find(sessionId);
+        int []decoded = null;
+        if (null != cachedRemoteIndexId) {
+            byte[] remoteBinary = irBinaryRepository.find(cachedRemoteIndexId);
+            IRDecode irDecode = IRDecode.getInstance();
+            int ret = 0;
+            // int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
+            if (0 == ret) {
+                decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
+            }
+            irDecode.closeBinary();
+            return decoded;
+        } else {
+            LoggerUtil.getInstance().trace(TAG, "session cache missed, need to re-open binary");
+        }
         return null;
+    }
+
+    public void close(IDecodeSessionRepository decodeSessionRepository, String sessionId) {
+        decodeSessionRepository.delete(sessionId);
     }
 
     // helper methods

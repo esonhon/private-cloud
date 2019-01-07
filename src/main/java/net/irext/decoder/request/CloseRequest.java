@@ -12,22 +12,21 @@ package net.irext.decoder.request;
  */
 public class CloseRequest {
 
-    private int indexId;
+    private String sessionId;
 
-    public CloseRequest(int indexId) {
-        this.indexId = indexId;
+    public CloseRequest(String sessionId) {
+        this.sessionId = sessionId;
     }
 
     public CloseRequest() {
 
     }
 
-    public int getIndexId() {
-        return indexId;
+    public String getSessionId() {
+        return sessionId;
     }
 
-    public void setIndexId(int indexId) {
-        this.indexId = indexId;
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
     }
-
 }
