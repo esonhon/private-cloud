@@ -5,8 +5,6 @@ import net.irext.decoder.response.ServiceResponse;
 import net.irext.decoder.response.Status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Filename:       AbstractBaseService.java

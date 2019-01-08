@@ -1,6 +1,5 @@
 package net.irext.decoder.utils;
 
-import net.irext.decoder.service.IRDecodeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

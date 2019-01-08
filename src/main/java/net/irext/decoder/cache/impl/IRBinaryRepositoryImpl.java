@@ -1,6 +1,7 @@
 package net.irext.decoder.cache.impl;
 
 import net.irext.decoder.cache.IIRBinaryRepository;
+import net.irext.decoder.model.RemoteIndex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class IRBinaryRepositoryImpl implements IIRBinaryRepository {
     private static final String KEY = "BINARY_KEY";
 
-    @Resource(name="redisTemplate")
+    @Resource(name = "redisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
     private HashOperations hashOperations;
 
@@ -38,19 +39,19 @@ public class IRBinaryRepositoryImpl implements IIRBinaryRepository {
         hashOperations = redisTemplate.opsForHash();
     }
 
-    public void add(Integer id, byte[] binaries) {
-        hashOperations.put(KEY, id, binaries);
+    public void add(Integer id, RemoteIndex remoteIndex) {
+        hashOperations.put(KEY, id, remoteIndex);
     }
 
     public void delete(final Integer id) {
         hashOperations.delete(KEY, id);
     }
 
-    public byte[] find(final Integer id) {
-        return (byte[])hashOperations.get(KEY, id);
+    public RemoteIndex find(final Integer id) {
+        return (RemoteIndex) hashOperations.get(KEY, id);
     }
 
-    public Map<Object, Object> findAllIRBinaries() {
+    public Map<Object, Object> findAllRemoteIndexes() {
         return hashOperations.entries(KEY);
     }
 }

@@ -66,7 +66,7 @@ public class IRDecode {
     }
 
     public int[] decodeBinary(int keyCode, ACStatus acStatus, int changeWindDir) {
-        int []decoded;
+        int[] decoded;
         synchronized (mSync) {
             if (null == acStatus) {
                 acStatus = new ACStatus();
@@ -86,7 +86,7 @@ public class IRDecode {
 
     public int[] getACSupportedMode() {
         // cool, heat, auto, fan, de-humidification
-        int []retSupportedMode = {0, 0, 0, 0, 0};
+        int[] retSupportedMode = {0, 0, 0, 0, 0};
         int supportedMode = irACGetSupportedMode();
         for (int i = Constants.ACMode.MODE_COOL.getValue(); i <=
                 Constants.ACMode.MODE_DEHUMIDITY.getValue(); i++) {
@@ -97,7 +97,7 @@ public class IRDecode {
 
     public int[] getACSupportedWindSpeed(int acMode) {
         // auto, low, medium, high
-        int []retSupportedWindSpeed = {0, 0, 0, 0};
+        int[] retSupportedWindSpeed = {0, 0, 0, 0};
         int supportedWindSpeed = irACGetSupportedWindSpeed(acMode);
         for (int i = Constants.ACWindSpeed.SPEED_AUTO.getValue();
              i <= Constants.ACWindSpeed.SPEED_HIGH.getValue();
@@ -109,7 +109,7 @@ public class IRDecode {
 
     public int[] getACSupportedSwing(int acMode) {
         // swing-on, swing-off
-        int []retSupportedSwing= {0, 0};
+        int[] retSupportedSwing = {0, 0};
         int supportedSwing = irACGetSupportedSwing(acMode);
         for (int i = Constants.ACSwing.SWING_ON.getValue();
              i <= Constants.ACSwing.SWING_OFF.getValue();

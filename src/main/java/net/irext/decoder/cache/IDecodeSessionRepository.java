@@ -1,7 +1,5 @@
 package net.irext.decoder.cache;
 
-import net.irext.decoder.model.DecodeSession;
-
 import java.util.Map;
 
 /**

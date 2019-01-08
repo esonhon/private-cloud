@@ -1,6 +1,6 @@
 package net.irext.decoder.cache;
 
-import net.irext.decoder.model.IRBinary;
+import net.irext.decoder.model.RemoteIndex;
 
 import java.util.Map;
 
@@ -16,11 +16,11 @@ import java.util.Map;
  */
 public interface IIRBinaryRepository {
 
-    Map<Object, Object> findAllIRBinaries();
+    Map<Object, Object> findAllRemoteIndexes();
 
-    void add(Integer id, byte[] binaries);
+    void add(Integer id, RemoteIndex remoteIndex);
 
     void delete(Integer id);
 
-    byte[] find(Integer id);
+    RemoteIndex find(Integer id);
 }

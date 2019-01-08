@@ -90,7 +90,7 @@ public class FileUtil {
                 if (f.isDirectory()) {
                     deleteAllFiles(f);
                     try {
-                        if(!f.delete()) {
+                        if (!f.delete()) {
                             System.out.println("failed to delete file");
                         }
                     } catch (Exception e) {
@@ -100,7 +100,7 @@ public class FileUtil {
                     if (f.exists()) {
                         deleteAllFiles(f);
                         try {
-                            if(!f.delete()) {
+                            if (!f.delete()) {
                                 System.out.println("failed to delete file");
                             }
                         } catch (Exception e) {

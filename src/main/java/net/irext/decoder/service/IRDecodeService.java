@@ -2,11 +2,11 @@ package net.irext.decoder.service;
 
 import net.irext.decoder.businesslogic.DecodeLogic;
 import net.irext.decoder.businesslogic.IndexLogic;
+import net.irext.decoder.cache.IDecodeSessionRepository;
+import net.irext.decoder.cache.IIRBinaryRepository;
 import net.irext.decoder.mapper.RemoteIndexMapper;
 import net.irext.decoder.model.DecodeSession;
 import net.irext.decoder.model.RemoteIndex;
-import net.irext.decoder.cache.IDecodeSessionRepository;
-import net.irext.decoder.cache.IIRBinaryRepository;
 import net.irext.decoder.request.CloseRequest;
 import net.irext.decoder.request.DecodeRequest;
 import net.irext.decoder.request.OpenRequest;
@@ -21,7 +21,10 @@ import net.irext.decodesdk.bean.ACStatus;
 import net.irext.decodesdk.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +67,7 @@ public class IRDecodeService extends AbstractBaseService {
         try {
             int remoteIndexId = openRequest.getRemoteIndexId();
 
-            LoggerUtil.getInstance().trace(TAG,"irOpen API called : " + remoteIndexId);
+            LoggerUtil.getInstance().trace(TAG, "irOpen API called : " + remoteIndexId);
 
             StringResponse response = new StringResponse();
             RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
@@ -76,10 +79,10 @@ public class IRDecodeService extends AbstractBaseService {
                 LoggerUtil.getInstance().trace(TAG, "remoteIndex get : " + remoteIndex.getId() + ", " +
                         remoteIndex.getRemoteMap());
             }
-            byte []binaryContent = DecodeLogic.getInstance().openIRBinary(context, irBinaryRepository, remoteIndex);
+            byte[] binaryContent = DecodeLogic.getInstance().openIRBinary(context, irBinaryRepository, remoteIndex);
 
             if (null != binaryContent) {
-                LoggerUtil.getInstance().trace(TAG,"binary content fetched : " + binaryContent.length);
+                LoggerUtil.getInstance().trace(TAG, "binary content fetched : " + binaryContent.length);
                 // construct a session with this binary
                 String address = request.getRemoteAddr();
                 LoggerUtil.getInstance().trace(TAG, "request Address = " + address);

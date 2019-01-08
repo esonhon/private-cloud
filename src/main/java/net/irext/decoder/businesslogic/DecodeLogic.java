@@ -2,9 +2,8 @@ package net.irext.decoder.businesslogic;
 
 import net.irext.decoder.alioss.OSSHelper;
 import net.irext.decoder.cache.IDecodeSessionRepository;
-import net.irext.decoder.model.IRBinary;
-import net.irext.decoder.model.RemoteIndex;
 import net.irext.decoder.cache.IIRBinaryRepository;
+import net.irext.decoder.model.RemoteIndex;
 import net.irext.decoder.utils.FileUtil;
 import net.irext.decoder.utils.LoggerUtil;
 import net.irext.decoder.utils.MD5Util;
@@ -44,7 +43,7 @@ public class DecodeLogic {
         return decodeLogic;
     }
 
-    public byte[] openIRBinary(ServletContext context, IIRBinaryRepository irBinaryRepository,
+    public RemoteIndex openIRBinary(ServletContext context, IIRBinaryRepository irBinaryRepository,
                                RemoteIndex remoteIndex) {
         if (null == remoteIndex) {
             return null;
@@ -56,15 +55,16 @@ public class DecodeLogic {
             LoggerUtil.getInstance().trace(TAG, "checksum for remoteIndex " +
                     remoteIndex.getId() + " = " + checksum);
 
-            byte[] binaries = irBinaryRepository.find(remoteIndex.getId());
-            if (null != binaries) {
-                LoggerUtil.getInstance().trace(TAG, "binary content fetched from redis : " + binaries.length);
+            RemoteIndex cachedRemoteIndex = irBinaryRepository.find(remoteIndex.getId());
+            if (null != cachedRemoteIndex) {
+                LoggerUtil.getInstance().trace(TAG, "binary content fetched from redis : " +
+                        cachedRemoteIndex.getRemoteMap());
                 // validate binary content
                 String cachedChecksum =
                         MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5")
-                                .digest(binaries)).toUpperCase();
+                                .digest(cachedRemoteIndex.getBinaries())).toUpperCase();
                 if (cachedChecksum.equals(checksum)) {
-                    return binaries;
+                    return cachedRemoteIndex;
                 }
             }
 
@@ -79,9 +79,9 @@ public class DecodeLogic {
                 if (null != fin) {
                     byte[] newBinaries = IOUtils.toByteArray(fin);
                     LoggerUtil.getInstance().trace(TAG, "binary content get, save it to redis");
-
-                    irBinaryRepository.add(remoteIndex.getId(), newBinaries);
-                    return binaries;
+                    remoteIndex.setBinaries(newBinaries);
+                    irBinaryRepository.add(remoteIndex.getId(), remoteIndex);
+                    return remoteIndex;
                 }
             } else {
                 LoggerUtil.getInstance().trace(TAG, "servlet context is null");
@@ -94,20 +94,24 @@ public class DecodeLogic {
     }
 
     public int[] decode(IIRBinaryRepository irBinaryRepository, IDecodeSessionRepository decodeSessionRepository,
-            String sessionId, int remoteIndexId, ACStatus acStatus, int keyCode, int changeWindDirection) {
+                        String sessionId, int remoteIndexId, ACStatus acStatus, int keyCode, int changeWindDirection) {
         // since the binary is already opened and probably cached to redis, we just need to load it
         Integer cachedRemoteIndexId = decodeSessionRepository.find(sessionId);
-        int []decoded = null;
+        int[] decoded = null;
         if (null != cachedRemoteIndexId) {
-            byte[] remoteBinary = irBinaryRepository.find(cachedRemoteIndexId);
-            IRDecode irDecode = IRDecode.getInstance();
-            int ret = 0;
-            // int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
-            if (0 == ret) {
-                decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
+            RemoteIndex cachedRemoteIndex = irBinaryRepository.find(cachedRemoteIndexId);
+            if (null != cachedRemoteIndex) {
+                int categoryId = cachedRemoteIndex.getCategoryId();
+                int subCate = cachedRemoteIndex.getSubCate();
+                byte[] binaryContent = cachedRemoteIndex.getBinaries();
+                IRDecode irDecode = IRDecode.getInstance();
+                int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
+                if (0 == ret) {
+                    decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
+                }
+                irDecode.closeBinary();
+                return decoded;
             }
-            irDecode.closeBinary();
-            return decoded;
         } else {
             LoggerUtil.getInstance().trace(TAG, "session cache missed, need to re-open binary");
         }
@@ -124,7 +128,7 @@ public class DecodeLogic {
             if (binFile.exists()) {
                 FileInputStream fileInputStream = new FileInputStream(binFile);
                 // validate binary content
-                byte []binaries = IOUtils.toByteArray(fileInputStream);
+                byte[] binaries = IOUtils.toByteArray(fileInputStream);
                 String fileChecksum =
                         MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5").digest(binaries)).toUpperCase();
 
@@ -135,7 +139,7 @@ public class DecodeLogic {
             OSSHelper ossHelper = new OSSHelper();
             InputStream inputStream = ossHelper.getOSS2InputStream(OSSHelper.BUCKET_NAME, "", fileName);
             // validate binary content
-            byte []binaries = IOUtils.toByteArray(inputStream);
+            byte[] binaries = IOUtils.toByteArray(inputStream);
             String ossChecksum =
                     MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5").digest(binaries)).toUpperCase();
             if (ossChecksum.equals(checksum)) {

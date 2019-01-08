@@ -1,6 +1,5 @@
 package net.irext.decoder.cache.impl;
 
-import net.irext.decoder.model.DecodeSession;
 import net.irext.decoder.cache.IDecodeSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
