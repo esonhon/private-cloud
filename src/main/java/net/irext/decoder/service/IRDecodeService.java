@@ -79,10 +79,13 @@ public class IRDecodeService extends AbstractBaseService {
                 LoggerUtil.getInstance().trace(TAG, "remoteIndex get : " + remoteIndex.getId() + ", " +
                         remoteIndex.getRemoteMap());
             }
-            byte[] binaryContent = DecodeLogic.getInstance().openIRBinary(context, irBinaryRepository, remoteIndex);
+            RemoteIndex cachedRemoteIndex =
+                    DecodeLogic.getInstance().openIRBinary(context, irBinaryRepository, remoteIndex);
 
-            if (null != binaryContent) {
-                LoggerUtil.getInstance().trace(TAG, "binary content fetched : " + binaryContent.length);
+            if (null != cachedRemoteIndex) {
+                LoggerUtil.getInstance().trace(TAG, "binary content fetched : " +
+                        cachedRemoteIndex.getRemoteMap());
+                remoteIndex.setBinaries(cachedRemoteIndex.getBinaries());
                 // construct a session with this binary
                 String address = request.getRemoteAddr();
                 LoggerUtil.getInstance().trace(TAG, "request Address = " + address);
@@ -132,7 +135,7 @@ public class IRDecodeService extends AbstractBaseService {
         try {
             String sessionId = closeRequest.getSessionId();
             ServiceResponse response = new ServiceResponse();
-            DecodeLogic.getInstance().close(sessionId);
+            DecodeLogic.getInstance().close(decodeSessionRepository, sessionId);
             return response;
         } catch (Exception e) {
             e.printStackTrace();
