@@ -93,27 +93,19 @@ public class DecodeLogic {
         return null;
     }
 
-    public int[] decode(IIRBinaryRepository irBinaryRepository, IDecodeSessionRepository decodeSessionRepository,
-                        String sessionId, int remoteIndexId, ACStatus acStatus, int keyCode, int changeWindDirection) {
-        // since the binary is already opened and probably cached to redis, we just need to load it
-        Integer cachedRemoteIndexId = decodeSessionRepository.find(sessionId);
+    public int[] decode(RemoteIndex remoteIndex, ACStatus acStatus, int keyCode, int changeWindDirection) {
         int[] decoded = null;
-        if (null != cachedRemoteIndexId) {
-            RemoteIndex cachedRemoteIndex = irBinaryRepository.find(cachedRemoteIndexId);
-            if (null != cachedRemoteIndex) {
-                int categoryId = cachedRemoteIndex.getCategoryId();
-                int subCate = cachedRemoteIndex.getSubCate();
-                byte[] binaryContent = cachedRemoteIndex.getBinaries();
-                IRDecode irDecode = IRDecode.getInstance();
-                int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
-                if (0 == ret) {
-                    decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
-                }
-                irDecode.closeBinary();
-                return decoded;
+        if (null != remoteIndex) {
+            int categoryId = remoteIndex.getCategoryId();
+            int subCate = remoteIndex.getSubCate();
+            byte[] binaryContent = remoteIndex.getBinaries();
+            IRDecode irDecode = IRDecode.getInstance();
+            int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
+            if (0 == ret) {
+                decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
             }
-        } else {
-            LoggerUtil.getInstance().trace(TAG, "session cache missed, need to re-open binary");
+            irDecode.closeBinary();
+            return decoded;
         }
         return null;
     }

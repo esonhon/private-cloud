@@ -72,7 +72,8 @@ public class IRDecodeService extends AbstractBaseService {
             StringResponse response = new StringResponse();
             RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
             if (null == remoteIndex) {
-                response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR, ""));
+                response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR,
+                        Constants.ERROR_CODE_NETWORK_ERROR_TEXT));
                 response.setEntity(null);
                 return response;
             } else {
@@ -96,7 +97,7 @@ public class IRDecodeService extends AbstractBaseService {
                 decodeSessionRepository.add(decodeSession.getSessionId(), decodeSession.getBinaryId());
                 response.setEntity(decodeSession.getSessionId());
             }
-            response.setStatus(new Status(Constants.ERROR_CODE_SUCCESS, ""));
+            response.setStatus(new Status(Constants.ERROR_CODE_SUCCESS, Constants.ERROR_CODE_SUCESS_TEXT));
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,16 +114,48 @@ public class IRDecodeService extends AbstractBaseService {
             int changeWindDir = decodeRequest.getChangeWindDir();
             String sessionId = decodeRequest.getSessionId();
 
+            RemoteIndex cachedRemoteIndex = null;
             DecodeResponse response = new DecodeResponse();
+
+            if (null == sessionId) {
+                LoggerUtil.getInstance().trace(TAG, "sessionId is not given, abort");
+                response.setEntity(null);
+                response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
+                        Constants.ERROR_CODE_INVALID_SESSION_TEXT));
+            } else {
+                Integer cachedRemoteIndexId = decodeSessionRepository.find(sessionId);
+                if (null == cachedRemoteIndexId) {
+                    response.setEntity(null);
+                    response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
+                            Constants.ERROR_CODE_INVALID_SESSION_TEXT));
+                } else {
+                    cachedRemoteIndex = irBinaryRepository.find(cachedRemoteIndexId);
+                    if (null == cachedRemoteIndex) {
+                        response.setEntity(null);
+                        response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
+                                Constants.ERROR_CODE_INVALID_SESSION_TEXT));
+                    } else {
+                        if (indexId != cachedRemoteIndex.getId()) {
+                            response.setEntity(null);
+                            response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
+                                    Constants.ERROR_CODE_INVALID_SESSION_TEXT));
+                        }
+                    }
+                }
+            }
+
+            if (response.getStatus().getCode() != Constants.ERROR_CODE_SUCCESS) {
+                return response;
+            }
+
             int[] irArray = DecodeLogic.getInstance().decode(
-                    irBinaryRepository,
-                    decodeSessionRepository,
-                    sessionId,
-                    indexId,
+                    cachedRemoteIndex,
                     acStatus,
                     keyCode,
                     changeWindDir);
 
+            response.setStatus(new Status(Constants.ERROR_CODE_SUCCESS, Constants.ERROR_CODE_SUCESS_TEXT));
+            response.setEntity(irArray);
             return response;
         } catch (Exception e) {
             e.printStackTrace();
