@@ -20,7 +20,8 @@ public class DecodeResponse extends ServiceResponse {
     }
 
     public DecodeResponse() {
-
+        super(new Status());
+        this.entity = null;
     }
 
     public int[] getEntity() {

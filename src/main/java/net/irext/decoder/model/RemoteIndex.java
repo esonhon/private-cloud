@@ -1,6 +1,8 @@
 package net.irext.decoder.model;
 
-public class RemoteIndex {
+import java.io.Serializable;
+
+public class RemoteIndex implements Serializable {
     private Integer id;
     private Integer categoryId;
     private String categoryName;
