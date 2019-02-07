@@ -91,5 +91,4 @@ fabric.properties
 
 # Customized ignore files
 target
-src/main/resources/application.properties
 
