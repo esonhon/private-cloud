@@ -135,6 +135,7 @@ public class DecodeLogic {
             // validate binary content
             if (null != inputStream) {
                 byte[] binaries = IOUtils.toByteArray(inputStream);
+                inputStream.close();
                 String ossChecksum =
                         MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5").digest(binaries)).toUpperCase();
                 if (ossChecksum.equals(checksum)) {
@@ -146,7 +147,7 @@ public class DecodeLogic {
                         LoggerUtil.getInstance().trace(TAG,"fatal : write file to local path failed");
                     }
                 } else {
-                    LoggerUtil.getInstance().trace(TAG,"fatal : checksum does not match even downloaded from OSS," +
+                    LoggerUtil.getInstance().trace(TAG,"fatal : checksum does not match even downloaded from OSS, " +
                             " please contact the admin");
                 }
             } else{
