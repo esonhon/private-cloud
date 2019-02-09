@@ -1,6 +1,6 @@
 package net.irext.decode.service.businesslogic;
 
-import net.irext.decode.service.alioss.OSSHelper;
+import com.squareup.okhttp.*;
 import net.irext.decode.service.cache.IDecodeSessionRepository;
 import net.irext.decode.service.cache.IIRBinaryRepository;
 import net.irext.decode.service.model.RemoteIndex;
@@ -14,6 +14,7 @@ import org.apache.commons.io.IOUtils;
 import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 
@@ -33,6 +34,8 @@ public class DecodeLogic {
 
     private static final String IR_BIN_FILE_PREFIX = "irda_";
     private static final String IR_BIN_FILE_SUFFIX = ".bin";
+
+    private static final String IR_BIN_DOWNLOAD_PREFIX = "http://irext-debug.oss-cn-hangzhou.aliyuncs.com/";
 
     private static DecodeLogic decodeLogic;
 
@@ -128,26 +131,52 @@ public class DecodeLogic {
                     return new FileInputStream(binFile);
                 }
             }
-            OSSHelper ossHelper = new OSSHelper();
-            InputStream inputStream = ossHelper.getOSS2InputStream(OSSHelper.BUCKET_NAME, "", fileName);
+            InputStream inputStream = getBinInputStream(fileName);
             // validate binary content
-            byte[] binaries = IOUtils.toByteArray(inputStream);
-            String ossChecksum =
-                    MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5").digest(binaries)).toUpperCase();
-            if (ossChecksum.equals(checksum)) {
-                FileUtil.createDirs(downloadPath);
-                if (FileUtil.write(binFile, binaries)) {
-                    return new FileInputStream(binFile);
+            if (null != inputStream) {
+                byte[] binaries = IOUtils.toByteArray(inputStream);
+                String ossChecksum =
+                        MD5Util.byteArrayToHexString(MessageDigest.getInstance("MD5").digest(binaries)).toUpperCase();
+                if (ossChecksum.equals(checksum)) {
+                    FileUtil.createDirs(downloadPath);
+                    if (FileUtil.write(binFile, binaries)) {
+                        LoggerUtil.getInstance().trace(TAG,"fatal : download file successfully");
+                        return new FileInputStream(binFile);
+                    } else {
+                        LoggerUtil.getInstance().trace(TAG,"fatal : write file to local path failed");
+                    }
                 } else {
-                    System.out.println("fatal : write file to local path failed");
+                    LoggerUtil.getInstance().trace(TAG,"fatal : checksum does not match even downloaded from OSS," +
+                            " please contact the admin");
                 }
-            } else {
-                System.out.println("fatal : checksum does not match even downloaded from OSS," +
-                        " please contact the admin");
+            } else{
+                LoggerUtil.getInstance().trace(TAG,"fatal : download file failed");
+                return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private InputStream getBinInputStream(String fileName) {
+        String downloadURL = IR_BIN_DOWNLOAD_PREFIX + fileName;
+        try {
+            LoggerUtil.getInstance().trace(TAG,"download file from OSS : " + downloadURL);
+            return getFileByteStreamByURL(downloadURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private InputStream getFileByteStreamByURL(String url) throws IOException {
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        Response response = new OkHttpClient().newCall(request).execute();
+        return response.body().byteStream();
     }
 }
