@@ -1,22 +1,21 @@
-package net.irext.decode.service.service;
+package net.irext.decode.service.restapi;
 
 import net.irext.decode.service.businesslogic.DecodeLogic;
 import net.irext.decode.service.cache.IDecodeSessionRepository;
 import net.irext.decode.service.cache.IIRBinaryRepository;
 import net.irext.decode.service.mapper.RemoteIndexMapper;
+import net.irext.decode.service.model.ACParameters;
 import net.irext.decode.service.model.DecodeSession;
 import net.irext.decode.service.model.RemoteIndex;
 import net.irext.decode.service.request.CloseRequest;
 import net.irext.decode.service.request.DecodeRequest;
+import net.irext.decode.service.request.GetACParametersRequest;
 import net.irext.decode.service.request.OpenRequest;
+import net.irext.decode.service.response.*;
 import net.irext.decode.service.utils.LoggerUtil;
 import net.irext.decode.service.utils.MD5Util;
 import net.irext.decode.service.businesslogic.IndexLogic;
-import net.irext.decode.service.response.DecodeResponse;
-import net.irext.decode.service.response.ServiceResponse;
-import net.irext.decode.service.response.Status;
-import net.irext.decode.service.response.StringResponse;
-import net.irext.decode.service.service.base.AbstractBaseService;
+import net.irext.decode.service.restapi.base.AbstractBaseService;
 import net.irext.decode.sdk.bean.ACStatus;
 import net.irext.decode.sdk.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,46 +104,51 @@ public class IRDecodeService extends AbstractBaseService {
         }
     }
 
+    @PostMapping("/get_ac_parameters")
+    public ACParametersResponse getACParameters(@RequestBody GetACParametersRequest getACParametersRequest) {
+        try {
+            int remoteIndexId = getACParametersRequest.getRemoteIndexId();
+            String sessionId = getACParametersRequest.getSessionId();
+            int mode = getACParametersRequest.getMode();
+
+            RemoteIndex cachedRemoteIndex = getCachedRemoteIndex(sessionId, remoteIndexId);
+            ACParametersResponse response = new ACParametersResponse();
+
+            if (null == cachedRemoteIndex) {
+                response.setEntity(null);
+                response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
+                        Constants.ERROR_CODE_INVALID_SESSION_TEXT));
+                return response;
+            }
+
+            ACParameters acParameters = DecodeLogic.getInstance().getACParameters(cachedRemoteIndex, mode);
+
+            response.setStatus(new Status(Constants.ERROR_CODE_SUCCESS, Constants.ERROR_CODE_SUCESS_TEXT));
+            response.setEntity(acParameters);
+            return response;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getExceptionResponse(ACParametersResponse.class);
+        }
+    }
+
     @PostMapping("/decode")
     public DecodeResponse irDecode(@RequestBody DecodeRequest decodeRequest) {
         try {
-            int indexId = decodeRequest.getRemoteIndexId();
+            int remoteIndexId = decodeRequest.getRemoteIndexId();
             ACStatus acStatus = decodeRequest.getAcStatus();
             int keyCode = decodeRequest.getKeyCode();
             int changeWindDir = decodeRequest.getChangeWindDir();
             String sessionId = decodeRequest.getSessionId();
 
-            RemoteIndex cachedRemoteIndex = null;
+            RemoteIndex cachedRemoteIndex = getCachedRemoteIndex(sessionId, remoteIndexId);;
             DecodeResponse response = new DecodeResponse();
 
-            if (null == sessionId) {
-                LoggerUtil.getInstance().trace(TAG, "sessionId is not given, abort");
+            if (null == cachedRemoteIndex) {
                 response.setEntity(null);
                 response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
                         Constants.ERROR_CODE_INVALID_SESSION_TEXT));
-            } else {
-                Integer cachedRemoteIndexId = decodeSessionRepository.find(sessionId);
-                if (null == cachedRemoteIndexId) {
-                    response.setEntity(null);
-                    response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
-                            Constants.ERROR_CODE_INVALID_SESSION_TEXT));
-                } else {
-                    cachedRemoteIndex = irBinaryRepository.find(cachedRemoteIndexId);
-                    if (null == cachedRemoteIndex) {
-                        response.setEntity(null);
-                        response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
-                                Constants.ERROR_CODE_INVALID_SESSION_TEXT));
-                    } else {
-                        if (indexId != cachedRemoteIndex.getId()) {
-                            response.setEntity(null);
-                            response.setStatus(new Status(Constants.ERROR_CODE_INVALID_SESSION,
-                                    Constants.ERROR_CODE_INVALID_SESSION_TEXT));
-                        }
-                    }
-                }
-            }
-
-            if (response.getStatus().getCode() != Constants.ERROR_CODE_SUCCESS) {
                 return response;
             }
 
@@ -174,5 +178,24 @@ public class IRDecodeService extends AbstractBaseService {
             e.printStackTrace();
             return getExceptionResponse(DecodeResponse.class);
         }
+    }
+
+    private RemoteIndex getCachedRemoteIndex(String sessionId, int remoteIndexId) {
+        RemoteIndex cachedRemoteIndex = null;
+
+        if (null == sessionId) {
+            LoggerUtil.getInstance().trace(TAG, "sessionId is not given, abort");
+        } else {
+            Integer cachedRemoteIndexId = decodeSessionRepository.find(sessionId);
+            if (null != cachedRemoteIndexId) {
+                cachedRemoteIndex = irBinaryRepository.find(cachedRemoteIndexId);
+                if (null != cachedRemoteIndex) {
+                    if (remoteIndexId != cachedRemoteIndex.getId()) {
+                        cachedRemoteIndex = null;
+                    }
+                }
+            }
+        }
+        return cachedRemoteIndex;
     }
 }

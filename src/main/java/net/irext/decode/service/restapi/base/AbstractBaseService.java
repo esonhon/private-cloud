@@ -1,4 +1,4 @@
-package net.irext.decode.service.service.base;
+package net.irext.decode.service.restapi.base;
 
 import net.irext.decode.service.Constants;
 import net.irext.decode.service.response.ServiceResponse;
@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
  * Revised:        Date: 2017-04-27
  * Revision:       Revision: 1.0
  * <p>
- * Description:    Base service abstract class implemented service interface
+ * Description:    Base restapi abstract class implemented restapi interface
  * <p>
  * Revision log:
  * 2017-04-27: created by strawmanbobi

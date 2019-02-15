@@ -1,8 +1,10 @@
 package net.irext.decode.service.businesslogic;
 
 import com.squareup.okhttp.*;
+import net.irext.decode.sdk.bean.TemperatureRange;
 import net.irext.decode.service.cache.IDecodeSessionRepository;
 import net.irext.decode.service.cache.IIRBinaryRepository;
+import net.irext.decode.service.model.ACParameters;
 import net.irext.decode.service.model.RemoteIndex;
 import net.irext.decode.service.utils.FileUtil;
 import net.irext.decode.service.utils.LoggerUtil;
@@ -28,6 +30,7 @@ import java.security.MessageDigest;
  * Revision log:
  * 2018-12-08: created by strawmanbobi
  */
+@SuppressWarnings("Duplicates")
 public class DecodeLogic {
 
     private static final String TAG = DecodeLogic.class.getSimpleName();
@@ -96,7 +99,8 @@ public class DecodeLogic {
         return null;
     }
 
-    public int[] decode(RemoteIndex remoteIndex, ACStatus acStatus, int keyCode, int changeWindDirection) {
+    public int[] decode(RemoteIndex remoteIndex, ACStatus acStatus,
+                        int keyCode, int changeWindDirection) {
         int[] decoded = null;
         if (null != remoteIndex) {
             int categoryId = remoteIndex.getCategoryId();
@@ -109,6 +113,34 @@ public class DecodeLogic {
             }
             irDecode.closeBinary();
             return decoded;
+        }
+        return null;
+    }
+
+    public ACParameters getACParameters(RemoteIndex remoteIndex, int mode) {
+        if (null != remoteIndex) {
+            ACParameters acParameters = new ACParameters();
+            int categoryId = remoteIndex.getCategoryId();
+            int subCate = remoteIndex.getSubCate();
+            byte[] binaryContent = remoteIndex.getBinaries();
+            IRDecode irDecode = IRDecode.getInstance();
+            int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
+            if (0 == ret) {
+                int []supportedModes = irDecode.getACSupportedMode();
+                acParameters.setSupportedModes(supportedModes);
+                if (1 == supportedModes[mode]) {
+                    // if this mode is really supported by this AC, get other parameters
+                    TemperatureRange temperatureRange = irDecode.getTemperatureRange(mode);
+                    int[] supportedWindSpeed = irDecode.getACSupportedWindSpeed(mode);
+                    int[] supportedSwing = irDecode.getACSupportedSwing(mode);
+                    acParameters.setTempMax(temperatureRange.getTempMax());
+                    acParameters.setTempMin(temperatureRange.getTempMin());
+                    acParameters.setSupportedWindSpeed(supportedWindSpeed);
+                    acParameters.setSupportedSwing(supportedSwing);
+                }
+            }
+            irDecode.closeBinary();
+            return acParameters;
         }
         return null;
     }
