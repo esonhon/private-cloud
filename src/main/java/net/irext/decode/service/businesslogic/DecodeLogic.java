@@ -34,6 +34,7 @@ import java.security.MessageDigest;
 public class DecodeLogic {
 
     private static final String TAG = DecodeLogic.class.getSimpleName();
+    private static final boolean DEBUG = false;
 
     private static final String IR_BIN_FILE_PREFIX = "irda_";
     private static final String IR_BIN_FILE_SUFFIX = ".bin";
@@ -127,12 +128,34 @@ public class DecodeLogic {
             int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
             if (0 == ret) {
                 int []supportedModes = irDecode.getACSupportedMode();
+
+                if (DEBUG) {
+                    LoggerUtil.getInstance().trace(TAG, "supported modes got : ");
+                    for (int i = 0; i < supportedModes.length; i++) {
+                        LoggerUtil.getInstance().trace(TAG, "supported mode [" + i + "] = " + supportedModes[i]);
+                    }
+                }
+
                 acParameters.setSupportedModes(supportedModes);
                 if (1 == supportedModes[mode]) {
                     // if this mode is really supported by this AC, get other parameters
                     TemperatureRange temperatureRange = irDecode.getTemperatureRange(mode);
                     int[] supportedWindSpeed = irDecode.getACSupportedWindSpeed(mode);
+
+                    if (DEBUG) {
+                        LoggerUtil.getInstance().trace(TAG, "supported wind speed got for mode : " + mode);
+                        for (int i = 0; i < supportedWindSpeed.length; i++) {
+                            LoggerUtil.getInstance().trace(TAG, "supported wind speed [" + i + "] = " + supportedWindSpeed[i]);
+                        }
+                    }
                     int[] supportedSwing = irDecode.getACSupportedSwing(mode);
+
+                    if (DEBUG) {
+                        LoggerUtil.getInstance().trace(TAG, "supported swing got for mode : " + mode);
+                        for (int i = 0; i < supportedSwing.length; i++) {
+                            LoggerUtil.getInstance().trace(TAG, "supported swing [" + i + "] = " + supportedSwing[i]);
+                        }
+                    }
                     acParameters.setTempMax(temperatureRange.getTempMax());
                     acParameters.setTempMin(temperatureRange.getTempMin());
                     acParameters.setSupportedWindSpeed(supportedWindSpeed);
