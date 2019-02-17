@@ -16,14 +16,17 @@ public class ACParameters {
     private int [] supportedModes;
     private int []supportedWindSpeed;
     private int []supportedSwing;
+    private int []supportedWindDirections;
 
     public ACParameters(int tempMin, int tempMax, int[] supportedModes,
-                        int[] supportedWindSpeed, int[] supportedSwing) {
+                        int[] supportedWindSpeed,
+                        int[] supportedSwing, int[] supportedWindDirections) {
         this.tempMin = tempMin;
         this.tempMax = tempMax;
         this.supportedModes = supportedModes;
         this.supportedWindSpeed = supportedWindSpeed;
         this.supportedSwing = supportedSwing;
+        this.supportedWindDirections = supportedWindDirections;
     }
 
     public ACParameters() {
@@ -68,5 +71,13 @@ public class ACParameters {
 
     public void setSupportedSwing(int[] supportedSwing) {
         this.supportedSwing = supportedSwing;
+    }
+
+    public int[] getSupportedWindDirections() {
+        return supportedWindDirections;
+    }
+
+    public void setSupportedWindDirections(int[] supportedWindDirections) {
+        this.supportedWindDirections = supportedWindDirections;
     }
 }

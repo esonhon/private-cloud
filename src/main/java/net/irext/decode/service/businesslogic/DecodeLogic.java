@@ -156,10 +156,20 @@ public class DecodeLogic {
                             LoggerUtil.getInstance().trace(TAG, "supported swing [" + i + "] = " + supportedSwing[i]);
                         }
                     }
+
+                    int supportedWindDirection = irDecode.getACSupportedWindDirection(mode);
+
+                    if (DEBUG) {
+                        LoggerUtil.getInstance().trace(TAG,
+                                "supported wind directions for mode : " + mode +
+                                        " = " + supportedWindDirection);
+                    }
+
                     acParameters.setTempMax(temperatureRange.getTempMax());
                     acParameters.setTempMin(temperatureRange.getTempMin());
                     acParameters.setSupportedWindSpeed(supportedWindSpeed);
                     acParameters.setSupportedSwing(supportedSwing);
+                    acParameters.setSupportedWindSpeed(supportedWindSpeed);
                 }
             }
             irDecode.closeBinary();
