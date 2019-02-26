@@ -12,6 +12,7 @@ import net.irext.decode.service.utils.MD5Util;
 import net.irext.decode.sdk.IRDecode;
 import net.irext.decode.sdk.bean.ACStatus;
 import org.apache.commons.io.IOUtils;
+import org.springframework.scheduling.annotation.Async;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -103,17 +104,19 @@ public class DecodeLogic {
     public int[] decode(RemoteIndex remoteIndex, ACStatus acStatus,
                         int keyCode, int changeWindDirection) {
         int[] decoded = null;
-        if (null != remoteIndex) {
-            int categoryId = remoteIndex.getCategoryId();
-            int subCate = remoteIndex.getSubCate();
-            byte[] binaryContent = remoteIndex.getBinaries();
-            IRDecode irDecode = IRDecode.getInstance();
-            int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
-            if (0 == ret) {
-                decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
+        synchronized(this) {
+            if (null != remoteIndex) {
+                int categoryId = remoteIndex.getCategoryId();
+                int subCate = remoteIndex.getSubCate();
+                byte[] binaryContent = remoteIndex.getBinaries();
+                IRDecode irDecode = IRDecode.getInstance();
+                int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
+                if (0 == ret) {
+                    decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
+                }
+                irDecode.closeBinary();
+                return decoded;
             }
-            irDecode.closeBinary();
-            return decoded;
         }
         return null;
     }
