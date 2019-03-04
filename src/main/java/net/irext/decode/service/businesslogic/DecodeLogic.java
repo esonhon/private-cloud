@@ -103,80 +103,92 @@ public class DecodeLogic {
 
     public int[] decode(RemoteIndex remoteIndex, ACStatus acStatus,
                         int keyCode, int changeWindDirection) {
-        int[] decoded = null;
-        synchronized(this) {
-            if (null != remoteIndex) {
-                int categoryId = remoteIndex.getCategoryId();
-                int subCate = remoteIndex.getSubCate();
-                byte[] binaryContent = remoteIndex.getBinaries();
-                IRDecode irDecode = IRDecode.getInstance();
-                int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
-                if (0 == ret) {
-                    decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
+        try {
+            int[] decoded = null;
+            synchronized (this) {
+                if (null != remoteIndex) {
+                    int categoryId = remoteIndex.getCategoryId();
+                    int subCate = remoteIndex.getSubCate();
+                    byte[] binaryContent = remoteIndex.getBinaries();
+                    IRDecode irDecode = IRDecode.getInstance();
+                    int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
+                    if (0 == ret) {
+                        decoded = irDecode.decodeBinary(keyCode, acStatus, changeWindDirection);
+                    }
+                    irDecode.closeBinary();
+                    /*
+                    decoded = irDecode.decodeBinary(categoryId, subCate, binaryContent, binaryContent.length,
+                            keyCode, acStatus, changeWindDirection);
+                    */
+                    return decoded;
                 }
-                irDecode.closeBinary();
-                return decoded;
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return null;
     }
 
     public ACParameters getACParameters(RemoteIndex remoteIndex, int mode) {
         if (null != remoteIndex) {
-            ACParameters acParameters = new ACParameters();
-            int categoryId = remoteIndex.getCategoryId();
-            int subCate = remoteIndex.getSubCate();
-            byte[] binaryContent = remoteIndex.getBinaries();
-            IRDecode irDecode = IRDecode.getInstance();
-            int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
-            if (0 == ret) {
-                int []supportedModes = irDecode.getACSupportedMode();
-
-                if (DEBUG) {
-                    LoggerUtil.getInstance().trace(TAG, "supported modes got : ");
-                    for (int i = 0; i < supportedModes.length; i++) {
-                        LoggerUtil.getInstance().trace(TAG, "supported mode [" + i + "] = " + supportedModes[i]);
-                    }
-                }
-
-                acParameters.setSupportedModes(supportedModes);
-                if (1 == supportedModes[mode]) {
-                    // if this mode is really supported by this AC, get other parameters
-                    TemperatureRange temperatureRange = irDecode.getTemperatureRange(mode);
-                    int[] supportedWindSpeed = irDecode.getACSupportedWindSpeed(mode);
+            try {
+                ACParameters acParameters = new ACParameters();
+                int categoryId = remoteIndex.getCategoryId();
+                int subCate = remoteIndex.getSubCate();
+                byte[] binaryContent = remoteIndex.getBinaries();
+                IRDecode irDecode = IRDecode.getInstance();
+                int ret = irDecode.openBinary(categoryId, subCate, binaryContent, binaryContent.length);
+                if (0 == ret) {
+                    int[] supportedModes = irDecode.getACSupportedMode();
 
                     if (DEBUG) {
-                        LoggerUtil.getInstance().trace(TAG, "supported wind speed got for mode : " + mode);
-                        for (int i = 0; i < supportedWindSpeed.length; i++) {
-                            LoggerUtil.getInstance().trace(TAG, "supported wind speed [" + i + "] = " + supportedWindSpeed[i]);
-                        }
-                    }
-                    int[] supportedSwing = irDecode.getACSupportedSwing(mode);
-
-                    if (DEBUG) {
-                        LoggerUtil.getInstance().trace(TAG, "supported swing got for mode : " + mode);
-                        for (int i = 0; i < supportedSwing.length; i++) {
-                            LoggerUtil.getInstance().trace(TAG, "supported swing [" + i + "] = " + supportedSwing[i]);
+                        LoggerUtil.getInstance().trace(TAG, "supported modes got : ");
+                        for (int i = 0; i < supportedModes.length; i++) {
+                            LoggerUtil.getInstance().trace(TAG, "supported mode [" + i + "] = " + supportedModes[i]);
                         }
                     }
 
-                    int supportedWindDirection = irDecode.getACSupportedWindDirection(mode);
+                    acParameters.setSupportedModes(supportedModes);
+                    if (1 == supportedModes[mode]) {
+                        // if this mode is really supported by this AC, get other parameters
+                        TemperatureRange temperatureRange = irDecode.getTemperatureRange(mode);
+                        int[] supportedWindSpeed = irDecode.getACSupportedWindSpeed(mode);
 
-                    if (DEBUG) {
-                        LoggerUtil.getInstance().trace(TAG,
-                                "supported wind directions for mode : " + mode +
-                                        " = " + supportedWindDirection);
+                        if (DEBUG) {
+                            LoggerUtil.getInstance().trace(TAG, "supported wind speed got for mode : " + mode);
+                            for (int i = 0; i < supportedWindSpeed.length; i++) {
+                                LoggerUtil.getInstance().trace(TAG, "supported wind speed [" + i + "] = " + supportedWindSpeed[i]);
+                            }
+                        }
+                        int[] supportedSwing = irDecode.getACSupportedSwing(mode);
+
+                        if (DEBUG) {
+                            LoggerUtil.getInstance().trace(TAG, "supported swing got for mode : " + mode);
+                            for (int i = 0; i < supportedSwing.length; i++) {
+                                LoggerUtil.getInstance().trace(TAG, "supported swing [" + i + "] = " + supportedSwing[i]);
+                            }
+                        }
+
+                        int supportedWindDirection = irDecode.getACSupportedWindDirection(mode);
+
+                        if (DEBUG) {
+                            LoggerUtil.getInstance().trace(TAG,
+                                    "supported wind directions for mode : " + mode +
+                                            " = " + supportedWindDirection);
+                        }
+
+                        acParameters.setTempMax(temperatureRange.getTempMax());
+                        acParameters.setTempMin(temperatureRange.getTempMin());
+                        acParameters.setSupportedWindSpeed(supportedWindSpeed);
+                        acParameters.setSupportedSwing(supportedSwing);
+                        acParameters.setSupportedWindSpeed(supportedWindSpeed);
                     }
-
-                    acParameters.setTempMax(temperatureRange.getTempMax());
-                    acParameters.setTempMin(temperatureRange.getTempMin());
-                    acParameters.setSupportedWindSpeed(supportedWindSpeed);
-                    acParameters.setSupportedSwing(supportedSwing);
-                    acParameters.setSupportedWindSpeed(supportedWindSpeed);
                 }
+                irDecode.closeBinary();
+                return acParameters;
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-            irDecode.closeBinary();
-            return acParameters;
         }
         return null;
     }

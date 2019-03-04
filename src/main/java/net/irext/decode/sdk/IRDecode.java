@@ -3,6 +3,7 @@ package net.irext.decode.sdk;
 import net.irext.decode.sdk.bean.ACStatus;
 import net.irext.decode.sdk.bean.TemperatureRange;
 import net.irext.decode.sdk.utils.Constants;
+import net.irext.decode.service.utils.LoggerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletContext;
@@ -33,6 +34,9 @@ public class IRDecode {
     private native int[] irDecode(int keyCode, ACStatus acStatus, int changeWindDirection);
 
     private native void irClose();
+
+    private native int[] irDecodeCombo(int category, int subCate, byte[] binaries, int binLength,
+                                       int keyCode, ACStatus acStatus, int changeWindDirection);
 
     private native TemperatureRange irACGetTemperatureRange(int acMode);
 
@@ -71,9 +75,34 @@ public class IRDecode {
         int[] decoded;
         synchronized (mSync) {
             if (null == acStatus) {
+                LoggerUtil.getInstance().trace(TAG, "AC Status is null, create a default one");
                 acStatus = new ACStatus();
+            } else {
+                LoggerUtil.getInstance().trace(TAG, "AC Status = " +
+                        acStatus.getAcPower() + ", " + acStatus.getAcMode() +
+                        ", " + acStatus.getAcTemp() + ", " + acStatus.getAcWindSpeed() +
+                        ", " + acStatus.getAcWindDir() + ", keyCode = " + keyCode);
             }
             decoded = irDecode(keyCode, acStatus, changeWindDir);
+        }
+        return decoded;
+    }
+
+    public int[] decodeBinary(int category, int subCate, byte[] binaries, int binLength,
+            int keyCode, ACStatus acStatus, int changeWindDir) {
+        int[] decoded;
+        synchronized (mSync) {
+            if (null == acStatus) {
+                LoggerUtil.getInstance().trace(TAG, "AC Status is null, create a default one");
+                acStatus = new ACStatus();
+            } else {
+                LoggerUtil.getInstance().trace(TAG, "AC Status = " +
+                        acStatus.getAcPower() + ", " + acStatus.getAcMode() +
+                        ", " + acStatus.getAcTemp() + ", " + acStatus.getAcWindSpeed() +
+                        ", " + acStatus.getAcWindDir() + ", keyCode = " + keyCode);
+            }
+            decoded = irDecodeCombo(category, subCate, binaries, binLength,
+                    keyCode, acStatus, changeWindDir);
         }
         return decoded;
     }
