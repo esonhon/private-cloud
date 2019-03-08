@@ -121,6 +121,13 @@ public class IRDecodeService extends AbstractBaseService {
                 return response;
             }
 
+            if (cachedRemoteIndex.getCategoryId() != Constants.CategoryID.AIR_CONDITIONER.getValue()) {
+                response.setEntity(null);
+                response.setStatus(new Status(Constants.ERROR_CODE_INVALID_CATEGORY,
+                        Constants.ERROR_CODE_INVALID_CATEGORY_TEXT));
+                return response;
+            }
+
             ACParameters acParameters = DecodeLogic.getInstance().getACParameters(cachedRemoteIndex, mode);
 
             response.setStatus(new Status(Constants.ERROR_CODE_SUCCESS, Constants.ERROR_CODE_SUCESS_TEXT));
