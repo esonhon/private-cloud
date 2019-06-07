@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.irext.decoder</groupId>
-    <artifactId>irext-decode-service</artifactId>
-    <version>0.2.0</version>
+    <groupId>net.irext.server</groupId>
+    <artifactId>irext-private-server</artifactId>
+    <version>0.2.1</version>
     <packaging>jar</packaging>
 
-    <name>IRext Decode Service</name>
+    <name>IRext Private Server</name>
     <description>Decoding IR binaries online</description>
 
     <parent>
