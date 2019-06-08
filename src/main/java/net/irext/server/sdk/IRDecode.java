@@ -59,7 +59,7 @@ public class IRDecode {
 
     private IRDecode() {
         String libPath = "/data/irext/libirda_decoder.so";
-        System.out.println("loading server library " + libPath);
+        LoggerUtil.getInstance().trace(TAG, "loading server library " + libPath);
         System.load(libPath);
     }
 

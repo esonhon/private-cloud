@@ -52,6 +52,9 @@ public class IRDecodeService extends AbstractBaseService {
     private ServletContext context;
 
     @Autowired
+    private IndexingLogic indexingLogic;
+
+    @Autowired
     private IIRBinaryRepository irBinaryRepository;
 
     @Autowired
@@ -69,7 +72,7 @@ public class IRDecodeService extends AbstractBaseService {
             LoggerUtil.getInstance().trace(TAG, "irOpen API called : " + remoteIndexId);
 
             StringResponse response = new StringResponse();
-            RemoteIndex remoteIndex = IndexingLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
+            RemoteIndex remoteIndex = indexingLogic.getRemoteIndex(remoteIndexId);
             if (null == remoteIndex) {
                 response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR,
                         Constants.ERROR_CODE_NETWORK_ERROR_TEXT));

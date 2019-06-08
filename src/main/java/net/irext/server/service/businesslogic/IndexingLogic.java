@@ -9,14 +9,14 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 /**
- * Filename:       CollectCodeLogic
- * Revised:        Date: 2018-12-08
+ * Filename:       IndexingLogic
+ * Revised:        Date: 2019-06-08
  * Revision:       Revision: 1.0
  * <p>
- * Description:    IRext Code Collector Collect Code Logic
+ * Description:    IRext private server indexing logic
  * <p>
  * Revision log:
- * 2018-12-08: created by strawmanbobi
+ * 2019-06-08: created by strawmanbobi
  */
 @Controller
 public class IndexingLogic {

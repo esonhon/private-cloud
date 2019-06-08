@@ -29,7 +29,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/irext-server/indexing")
-@Service("IRDecodeService")
+@Service("IRIndexingService")
 public class IRIndexingService extends AbstractBaseService {
 
     private static final String TAG = IRIndexingService.class.getSimpleName();
@@ -63,9 +63,7 @@ public class IRIndexingService extends AbstractBaseService {
                 }
             }
 
-            System.out.println("language = " + lang);
-
-            CategoriesResponse response = validateToken(Integer.toString(id), token, CategoriesResponse.class);
+            CategoriesResponse response = validateToken(id, token, CategoriesResponse.class);
             if (response.getStatus().getCode() == Constants.ERROR_CODE_AUTH_FAILURE) {
                 return response;
             }

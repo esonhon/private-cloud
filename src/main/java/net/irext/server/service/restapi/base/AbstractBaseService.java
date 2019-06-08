@@ -1,15 +1,14 @@
 package net.irext.server.service.restapi.base;
 
-import net.irext.server.redis.model.CachedAdmin;
-import net.irext.server.redis.service.AdminService;
 import net.irext.server.service.Constants;
 import net.irext.server.service.aspect.TokenValidation;
+import net.irext.server.service.cache.IUserAppRepository;
 import net.irext.server.service.response.ServiceResponse;
 import net.irext.server.service.response.Status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Filename:       AbstractBaseService.java
@@ -25,8 +24,11 @@ public abstract class AbstractBaseService implements TokenValidation {
 
     protected static Log log = LogFactory.getLog(AbstractBaseService.class);
 
+    @Autowired
+    IUserAppRepository userAppRepository;
+
     @Override
-    public ServiceResponse validateToken(String userId, String token) {
+    public ServiceResponse validateToken(Integer userId, String token) {
         if (log.isDebugEnabled()) {
             log.debug("Auth token id: " + userId + ", token: " + token);
         }
@@ -44,7 +46,7 @@ public abstract class AbstractBaseService implements TokenValidation {
     }
 
     @Override
-    public <T extends ServiceResponse> T validateToken(String userId, String token,
+    public <T extends ServiceResponse> T validateToken(Integer userId, String token,
                                                        Class<T> c) {
         T r = null;
         Status status = new Status();
@@ -94,15 +96,11 @@ public abstract class AbstractBaseService implements TokenValidation {
         return r;
     }
 
-    private Status validateUserToken(String userId, String token) {
+    private Status validateUserToken(Integer userId, String token) {
         Status status = new Status();
         ApplicationContext applicationContext;
-        AdminService adminService;
 
-        applicationContext = new ClassPathXmlApplicationContext("redisBeans.xml");
-        adminService = applicationContext.getBean(AdminService.class);
-        CachedAdmin cachedAdmin = adminService.get(userId);
-        if (null != cachedAdmin && cachedAdmin.getToken().equals(token)) {
+        if (userAppRepository.find(userId).equals(token)) {
             status.setCode(Constants.ERROR_CODE_SUCCESS);
         } else {
             status.setCode(Constants.ERROR_CODE_AUTH_FAILURE);

@@ -21,14 +21,14 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 
 /**
- * Filename:       CollectCodeLogic
- * Revised:        Date: 2018-12-08
+ * Filename:       DecodeLogic
+ * Revised:        Date: 2018-12-30
  * Revision:       Revision: 1.0
  * <p>
- * Description:    IRext Code Collector Collect Code Logic
+ * Description:    IRext private server decode logic
  * <p>
  * Revision log:
- * 2018-12-08: created by strawmanbobi
+ * 2018-12-30: created by strawmanbobi
  */
 @SuppressWarnings("Duplicates")
 public class DecodeLogic {

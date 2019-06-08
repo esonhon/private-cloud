@@ -14,9 +14,9 @@ import net.irext.server.service.response.ServiceResponse;
  */
 public interface TokenValidation {
 
-    ServiceResponse validateToken(String userId, String token);
+    ServiceResponse validateToken(Integer userId, String token);
 
-    <T extends ServiceResponse> T validateToken(String userId, String token,
+    <T extends ServiceResponse> T validateToken(Integer userId, String token,
                                                 Class<T> c);
 
 }

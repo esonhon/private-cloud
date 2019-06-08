@@ -1,5 +1,7 @@
 package net.irext.server.service.response;
 
+import net.irext.server.service.model.StbOperator;
+
 import java.util.List;
 
 /**
@@ -14,9 +16,9 @@ import java.util.List;
  */
 public class OperatorsResponse extends ServiceResponse {
 
-    private List<net.irext.server.model.StbOperator> entity;
+    private List<StbOperator> entity;
 
-    public OperatorsResponse(Status status, List<net.irext.server.model.StbOperator> cities) {
+    public OperatorsResponse(Status status, List<StbOperator> cities) {
         super(status);
         this.entity = cities;
     }
@@ -25,11 +27,11 @@ public class OperatorsResponse extends ServiceResponse {
 
     }
 
-    public List<net.irext.server.model.StbOperator> getEntity() {
+    public List<StbOperator> getEntity() {
         return entity;
     }
 
-    public void setEntity(List<net.irext.server.model.StbOperator> entity) {
+    public void setEntity(List<StbOperator> entity) {
         this.entity = entity;
     }
 }

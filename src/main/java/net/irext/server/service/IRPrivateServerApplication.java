@@ -20,10 +20,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @MappedTypes(RemoteIndex.class)
 @MapperScan("net.irext.decoder.mapper")
 @SpringBootApplication
-public class IRDecoderApplication {
+public class IRPrivateServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(IRDecoderApplication.class, args);
+        SpringApplication.run(IRPrivateServerApplication.class, args);
     }
 
 }
