@@ -10,7 +10,7 @@ package net.irext.server.service.request;
  * Revision log:
  * 2017-04-14: created by strawmanbobi
  */
-public class DownloadBinaryRequest {
+public class DownloadBinaryRequest extends BaseRequest {
 
     private int indexId;
 

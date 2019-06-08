@@ -10,7 +10,7 @@ package net.irext.server.service.request;
  * Revision log:
  * 2019-02-14: created by strawmanbobi
  */
-public class GetACParametersRequest {
+public class GetACParametersRequest extends BaseRequest {
 
     private int remoteIndexId;
     private String sessionId;

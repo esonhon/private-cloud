@@ -14,7 +14,7 @@ import net.irext.server.service.request.OpenRequest;
 import net.irext.server.service.response.*;
 import net.irext.server.service.utils.LoggerUtil;
 import net.irext.server.service.utils.MD5Util;
-import net.irext.server.service.businesslogic.IndexLogic;
+import net.irext.server.service.businesslogic.IndexingLogic;
 import net.irext.server.service.restapi.base.AbstractBaseService;
 import net.irext.server.sdk.bean.ACStatus;
 import net.irext.server.sdk.utils.Constants;
@@ -34,13 +34,13 @@ import java.text.SimpleDateFormat;
  * Revised:        Date: 2018-12-16
  * Revision:       Revision: 1.0
  * <p>
- * Description:    IRext Decode WebService
+ * Description:    IRext Decode Webservice
  * <p>
  * Revision log:
  * 2018-12-16: created by strawmanbobi
  */
 @RestController
-@RequestMapping("/irext")
+@RequestMapping("/irext-server/decode")
 @Service("IRDecodeService")
 public class IRDecodeService extends AbstractBaseService {
 
@@ -69,7 +69,7 @@ public class IRDecodeService extends AbstractBaseService {
             LoggerUtil.getInstance().trace(TAG, "irOpen API called : " + remoteIndexId);
 
             StringResponse response = new StringResponse();
-            RemoteIndex remoteIndex = IndexLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
+            RemoteIndex remoteIndex = IndexingLogic.getInstance(remoteIndexMapper).getRemoteIndex(remoteIndexId);
             if (null == remoteIndex) {
                 response.setStatus(new Status(Constants.ERROR_CODE_NETWORK_ERROR,
                         Constants.ERROR_CODE_NETWORK_ERROR_TEXT));

@@ -10,7 +10,7 @@ package net.irext.server.service.request;
  * Revision log:
  * 2018-12-18: created by strawmanbobi
  */
-public class CloseRequest {
+public class CloseRequest extends BaseRequest {
 
     private String sessionId;
 

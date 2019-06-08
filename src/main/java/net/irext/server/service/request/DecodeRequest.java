@@ -12,7 +12,7 @@ import net.irext.server.sdk.bean.ACStatus;
  * Revision log:
  * 2017-05-16: created by strawmanbobi
  */
-public class DecodeRequest {
+public class DecodeRequest extends BaseRequest{
 
     private int remoteIndexId;
     private ACStatus acStatus;
