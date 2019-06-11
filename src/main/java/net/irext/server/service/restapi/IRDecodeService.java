@@ -34,11 +34,12 @@ import java.text.SimpleDateFormat;
  * Revised:        Date: 2018-12-16
  * Revision:       Revision: 1.0
  * <p>
- * Description:    IRext Decode Webservice
+ * Description:    IRext decode service
  * <p>
  * Revision log:
  * 2018-12-16: created by strawmanbobi
  */
+
 @RestController
 @RequestMapping("/irext-server/decode")
 @Service("IRDecodeService")
@@ -59,10 +60,6 @@ public class IRDecodeService extends AbstractBaseService {
 
     @Autowired
     private IDecodeSessionRepository decodeSessionRepository;
-
-    public IRDecodeService(RemoteIndexMapper remoteIndexMapper) {
-        this.remoteIndexMapper = remoteIndexMapper;
-    }
 
     @PostMapping("/open")
     public StringResponse irOpen(HttpServletRequest request, @RequestBody OpenRequest openRequest) {

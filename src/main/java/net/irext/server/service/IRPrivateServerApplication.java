@@ -8,17 +8,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * Filename:       SpringBootMybatisApplication
- * Revised:        Date: 2018-12-08
+ * Revised:        Date: 2019-06-10
  * Revision:       Revision: 1.0
  * <p>
- * Description:    IRext Code Collector Application
+ * Description:    IRext private server application
  * <p>
  * Revision log:
- * 2018-12-08: created by strawmanbobi
+ * 2019-06-10: created by strawmanbobi
  */
 
 @MappedTypes(RemoteIndex.class)
-@MapperScan("net.irext.decoder.mapper")
+@MapperScan("net.irext.server.service.mapper")
 @SpringBootApplication
 public class IRPrivateServerApplication {
 

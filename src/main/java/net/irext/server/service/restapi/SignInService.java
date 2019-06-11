@@ -8,29 +8,36 @@ import net.irext.server.service.request.AppSignInRequest;
 import net.irext.server.service.response.LoginResponse;
 import net.irext.server.service.response.Status;
 import net.irext.server.service.restapi.base.AbstractBaseService;
+import net.irext.server.service.utils.LoggerUtil;
 import net.irext.server.service.utils.MD5Util;
 import net.irext.server.service.utils.VeDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Filename:       SignInServiceImpl.java
  * Revised:        Date: 2017-04-27
  * Revision:       Revision: 1.0
  * <p>
- * Description:    Admin service interface implementation
+ * Description:    User app login service
  * <p>
  * Revision log:
  * 2017-04-27: created by strawmanbobi
  */
+
 @RestController
 @RequestMapping("/irext-server/app")
 @Service("SignInService")
 public class SignInService extends AbstractBaseService {
+
+    private static final String TAG = SignInService.class.getSimpleName();
 
     @Autowired
     private UserLoginLogic loginLogic;
@@ -39,7 +46,8 @@ public class SignInService extends AbstractBaseService {
     private IUserAppRepository userAppRepository;
 
     @PostMapping("/app_login")
-    public LoginResponse signIn(AppSignInRequest appSignInRequest) {
+    public LoginResponse signIn(HttpServletRequest request, @RequestBody AppSignInRequest appSignInRequest) {
+        LoggerUtil.getInstance().trace(TAG, "signIn API called : " + appSignInRequest.getAppKey());
         try {
             LoginResponse response = new LoginResponse();
             response.setStatus(new Status());
@@ -51,12 +59,7 @@ public class SignInService extends AbstractBaseService {
                 return response;
             }
 
-            UserApp userApp = loginLogic.login(appSignInRequest.getAppKey(),
-                    appSignInRequest.getAppSecret(),
-                    appSignInRequest.getAppType(),
-                    appSignInRequest.getiOSID(),
-                    appSignInRequest.getAndroidPackageName(),
-                    appSignInRequest.getAndroidSignature());
+            UserApp userApp = loginLogic.login(appSignInRequest);
 
             if (userApp != null) {
                 // generate token by date time

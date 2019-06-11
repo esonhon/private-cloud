@@ -1,6 +1,10 @@
 package net.irext.server.service.businesslogic;
 
+import com.google.gson.Gson;
+import com.squareup.okhttp.*;
 import net.irext.server.service.model.UserApp;
+import net.irext.server.service.request.AppSignInRequest;
+import net.irext.server.service.response.LoginResponse;
 import org.springframework.stereotype.Controller;
 
 /**
@@ -15,9 +19,27 @@ import org.springframework.stereotype.Controller;
  */
 @Controller
 public class UserLoginLogic {
+    private static final MediaType JSON
+            = MediaType.parse("application/json; charset=utf-8");
 
-    public UserApp login(String appKey, String appSecret, Integer appType,
-                         String iosId, String androidPackageName, String androidSignature) {
+    public UserApp login(AppSignInRequest appSignInRequest) {
+        String url = "http://irext.net/irext-server/app/app_login";
+        String requestBody = new Gson().toJson(appSignInRequest);
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = RequestBody.create(JSON, requestBody);
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        try {
+            Response response = client.newCall(request).execute();
+            String responseBody = response.body().string();
+            LoginResponse loginResponse = new Gson().fromJson(responseBody, LoginResponse.class);
+            return loginResponse.getEntity();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }
