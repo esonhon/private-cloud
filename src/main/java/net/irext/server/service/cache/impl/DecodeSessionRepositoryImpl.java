@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @Repository
 public class DecodeSessionRepositoryImpl implements IDecodeSessionRepository {
-    private static final String KEY = "SESSION_KEY";
+    private static final String KEY = "DECODE_SESSION_KEY";
 
     private RedisTemplate<String, Object> redisTemplate;
     private HashOperations hashOperations;

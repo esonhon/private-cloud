@@ -47,7 +47,6 @@ public class SignInService extends AbstractBaseService {
 
     @PostMapping("/app_login")
     public LoginResponse signIn(HttpServletRequest request, @RequestBody AppSignInRequest appSignInRequest) {
-        LoggerUtil.getInstance().trace(TAG, "signIn API called : " + appSignInRequest.getAppKey());
         try {
             LoginResponse response = new LoginResponse();
             response.setStatus(new Status());

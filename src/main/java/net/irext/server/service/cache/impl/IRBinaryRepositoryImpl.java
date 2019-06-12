@@ -23,7 +23,7 @@ import java.util.Map;
  */
 @Repository
 public class IRBinaryRepositoryImpl implements IIRBinaryRepository {
-    private static final String KEY = "BINARY_KEY";
+    private static final String KEY = "IR_BINARY_KEY";
 
     @Resource(name = "redisTemplate")
     private RedisTemplate<String, Object> redisTemplate;
