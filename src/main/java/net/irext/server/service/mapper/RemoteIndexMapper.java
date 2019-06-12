@@ -12,14 +12,13 @@ import java.util.List;
  * Revised:        Date: 2018-12-08
  * Revision:       Revision: 1.0
  * <p>
- * Description:    CollectRemote Mybatis Mapper
+ * Description:    RemoteIndexMapper
  * <p>
  * Revision log:
  * 2018-12-08: created by strawmanbobi
  */
 @Mapper
 public interface RemoteIndexMapper {
-
     @Select("SELECT * FROM remote_index WHERE id = #{id}")
     @ResultMap("BaseResultMap")
     List<RemoteIndex> getRemoteIndexById(int id);

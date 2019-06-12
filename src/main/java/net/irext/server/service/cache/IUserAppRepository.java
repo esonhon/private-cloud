@@ -1,7 +1,5 @@
 package net.irext.server.service.cache;
 
-import net.irext.server.service.model.UserApp;
-
 /**
  * Filename:       IUserAppRepository.java
  * Revised:        Date: 2019-06-08

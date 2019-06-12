@@ -10,10 +10,12 @@ import net.irext.server.service.restapi.base.AbstractBaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.HeaderParam;
 import java.util.List;
 
@@ -44,8 +46,9 @@ public class IRIndexingService extends AbstractBaseService {
     }
 
     @PostMapping("/list_categories")
-    public CategoriesResponse listCategories(@HeaderParam("user-lang") String userLang,
-                                             ListCategoriesRequest listCategoriesRequest) {
+    public CategoriesResponse listCategories(HttpServletRequest request,
+                                             @HeaderParam("user-lang") String userLang,
+                                             @RequestBody ListCategoriesRequest listCategoriesRequest) {
         try {
             int id = listCategoriesRequest.getId();
             String token = listCategoriesRequest.getToken();

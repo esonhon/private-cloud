@@ -1,7 +1,6 @@
 package net.irext.server.service.cache.impl;
 
 import net.irext.server.service.cache.IUserAppRepository;
-import net.irext.server.service.model.UserApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
