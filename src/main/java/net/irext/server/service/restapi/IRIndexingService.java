@@ -3,10 +3,7 @@ package net.irext.server.service.restapi;
 import net.irext.server.service.Constants;
 import net.irext.server.service.businesslogic.IndexingLogic;
 import net.irext.server.service.mapper.RemoteIndexMapper;
-import net.irext.server.service.model.Brand;
-import net.irext.server.service.model.Category;
-import net.irext.server.service.model.City;
-import net.irext.server.service.model.StbOperator;
+import net.irext.server.service.model.*;
 import net.irext.server.service.request.*;
 import net.irext.server.service.response.*;
 import net.irext.server.service.restapi.base.AbstractBaseService;
@@ -120,7 +117,7 @@ public class IRIndexingService extends AbstractBaseService {
     @PostMapping("/list_provinces")
     public CitiesResponse listProvinces(HttpServletRequest request,
                                         @HeaderParam("user-lang") String userLang,
-                                        ListCitiesRequest listCitiesRequest) {
+                                        @RequestBody ListCitiesRequest listCitiesRequest) {
         try {
             int id = listCitiesRequest.getId();
             String token = listCitiesRequest.getToken();
@@ -131,7 +128,12 @@ public class IRIndexingService extends AbstractBaseService {
             }
 
             List<City> cityList = indexingLogic.listProvinces();
-
+            if (cityList != null) {
+                response.getStatus().setCode(Constants.ERROR_CODE_SUCCESS);
+                response.setEntity(cityList);
+            } else {
+                response.getStatus().setCode(Constants.ERROR_CODE_NETWORK_ERROR);
+            }
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,7 +144,7 @@ public class IRIndexingService extends AbstractBaseService {
     @PostMapping("/list_cities")
     public CitiesResponse listCities(HttpServletRequest request,
                                      @HeaderParam("user-lang") String userLang,
-                                     ListCitiesRequest listCitiesRequest) {
+                                     @RequestBody ListCitiesRequest listCitiesRequest) {
         try {
             int id = listCitiesRequest.getId();
             String token = listCitiesRequest.getToken();
@@ -154,7 +156,12 @@ public class IRIndexingService extends AbstractBaseService {
             }
 
             List<City> cityList = indexingLogic.listCities(provincePrefix);
-
+            if (cityList != null) {
+                response.getStatus().setCode(Constants.ERROR_CODE_SUCCESS);
+                response.setEntity(cityList);
+            } else {
+                response.getStatus().setCode(Constants.ERROR_CODE_NETWORK_ERROR);
+            }
             return response;
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,7 +172,7 @@ public class IRIndexingService extends AbstractBaseService {
     @PostMapping("/list_operators")
     public OperatorsResponse listOperators(HttpServletRequest request,
                                            @HeaderParam("user-lang") String userLang,
-                                           ListOperatorsRequest listOperatorsRequest) {
+                                           @RequestBody ListOperatorsRequest listOperatorsRequest) {
         try {
             int id = listOperatorsRequest.getId();
             String token = listOperatorsRequest.getToken();
@@ -177,11 +184,49 @@ public class IRIndexingService extends AbstractBaseService {
             }
 
             List<StbOperator> operatorList = indexingLogic.listOperators(cityCode);
-
+            if (operatorList != null) {
+                response.getStatus().setCode(Constants.ERROR_CODE_SUCCESS);
+                response.setEntity(operatorList);
+            } else {
+                response.getStatus().setCode(Constants.ERROR_CODE_NETWORK_ERROR);
+            }
             return response;
         } catch (Exception e) {
             e.printStackTrace();
             return getExceptionResponse(OperatorsResponse.class);
+        }
+    }
+
+    @PostMapping("/list_indexes")
+    public IndexesResponse listOperators(HttpServletRequest request,
+                                         @HeaderParam("user-lang") String userLang,
+                                         @RequestBody ListIndexesRequest listIndexesRequest) {
+        try {
+            int id = listIndexesRequest.getId();
+            String token = listIndexesRequest.getToken();
+            int categoryId = listIndexesRequest.getCategoryId();
+            int brandId = listIndexesRequest.getBrandId();
+            String cityCode = listIndexesRequest.getCityCode();
+            int from = listIndexesRequest.getFrom();
+            int count = listIndexesRequest.getCount();
+
+            IndexesResponse response = validateToken(id, token, IndexesResponse.class);
+            if (response.getStatus().getCode() == Constants.ERROR_CODE_AUTH_FAILURE) {
+                return response;
+            }
+
+            List<RemoteIndex> remoteIndexList =
+                    indexingLogic.listRemoteIndexes(categoryId, brandId, cityCode, from, count);
+            if (remoteIndexList != null) {
+                response.getStatus().setCode(Constants.ERROR_CODE_SUCCESS);
+                response.setEntity(remoteIndexList);
+            } else {
+                response.getStatus().setCode(Constants.ERROR_CODE_NETWORK_ERROR);
+            }
+            return response;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return getExceptionResponse(IndexesResponse.class);
         }
     }
 

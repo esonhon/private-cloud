@@ -83,4 +83,14 @@ public class IndexingLogic {
     public List<StbOperator> listOperators(String cityCode) {
         return operatorMapper.listOperators(cityCode);
     }
+
+    public List<RemoteIndex> listRemoteIndexes(int categoryId, int brandId, String cityCode, int from, int count) {
+        List<RemoteIndex> remoteIndexList;
+        if (categoryId == Constants.CategoryID.STB.getValue()) {
+            remoteIndexList = remoteIndexMapper.listRemoteIndexByCity(cityCode, from, count);
+        } else {
+            remoteIndexList = remoteIndexMapper.listRemoteIndexByBrand(categoryId, brandId, from, count);
+        }
+        return remoteIndexList;
+    }
 }

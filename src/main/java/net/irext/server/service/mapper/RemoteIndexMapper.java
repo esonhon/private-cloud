@@ -22,4 +22,13 @@ public interface RemoteIndexMapper {
     @Select("SELECT * FROM remote_index WHERE id = #{id}")
     @ResultMap("BaseResultMap")
     List<RemoteIndex> getRemoteIndexById(int id);
+
+    @Select("SELECT * FROM remote_index WHERE city_code = #{cityCode} ORDER BY priority LIMIT #{from}, #{count}")
+    @ResultMap("BaseResultMap")
+    List<RemoteIndex> listRemoteIndexByCity(String cityCode, int from, int count);
+
+    @Select("SELECT * FROM remote_index WHERE category_id = #{categoryId} AND brand_id = #{brandId} " +
+            "ORDER BY priority LIMIT #{from}, #{count}")
+    @ResultMap("BaseResultMap")
+    List<RemoteIndex> listRemoteIndexByBrand(int categoryId, int brandId, int from, int count);
 }
