@@ -1,8 +1,5 @@
 package net.irext.server.service;
 
-import net.irext.server.service.model.Category;
-import net.irext.server.service.model.RemoteIndex;
-import org.apache.ibatis.type.MappedTypes;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

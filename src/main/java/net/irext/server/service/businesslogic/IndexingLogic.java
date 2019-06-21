@@ -1,9 +1,8 @@
 package net.irext.server.service.businesslogic;
 
-import net.irext.server.service.mapper.CategoryMapper;
-import net.irext.server.service.mapper.RemoteIndexMapper;
-import net.irext.server.service.model.Category;
-import net.irext.server.service.model.RemoteIndex;
+import net.irext.server.service.Constants;
+import net.irext.server.service.mapper.*;
+import net.irext.server.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -26,6 +25,15 @@ public class IndexingLogic {
     private CategoryMapper categoryMapper;
 
     @Autowired
+    private BrandMapper brandMapper;
+
+    @Autowired
+    private CityMapper cityMapper;
+
+    @Autowired
+    private OperatorMapper operatorMapper;
+
+    @Autowired
     private RemoteIndexMapper remoteIndexMapper;
 
     public RemoteIndex getRemoteIndex(int indexId) {
@@ -37,6 +45,42 @@ public class IndexingLogic {
     }
 
     public List<Category> listCategories(int lang, int from, int count) {
-        return categoryMapper.listCategories(from, count);
+        List<Category> categoryList = categoryMapper.listCategories(from, count);
+        if (lang == Constants.LANG_EN) {
+            for (Category category : categoryList) {
+                category.setName(category.getNameEn());
+            }
+        } else if (lang == Constants.LANG_TW_CN) {
+            for (Category category : categoryList) {
+                category.setName(category.getNameTw());
+            }
+        }
+        return categoryList;
+    }
+
+    public List<Brand> listBrands(int lang, int categoryId, int from, int count) {
+        List<Brand> brandList = brandMapper.listBrands(categoryId, from, count);
+        if (lang == Constants.LANG_EN) {
+            for (Brand brand : brandList) {
+                brand.setName(brand.getNameEn());
+            }
+        } else if (lang == Constants.LANG_TW_CN) {
+            for (Brand brand : brandList) {
+                brand.setName(brand.getNameTw());
+            }
+        }
+        return brandList;
+    }
+
+    public List<City> listProvinces() {
+        return cityMapper.listProvinces();
+    }
+
+    public List<City> listCities(String provincePrefix) {
+        return cityMapper.listCities(provincePrefix);
+    }
+
+    public List<StbOperator> listOperators(String cityCode) {
+        return operatorMapper.listOperators(cityCode);
     }
 }
