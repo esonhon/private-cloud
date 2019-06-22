@@ -14,7 +14,7 @@ import net.irext.server.service.model.ACParameters;
  */
 public class ACParametersResponse extends ServiceResponse {
 
-    ACParameters entity;
+    private ACParameters entity;
 
     public ACParametersResponse(Status status, ACParameters entity) {
         super(status);

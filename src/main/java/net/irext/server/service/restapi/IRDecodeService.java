@@ -3,7 +3,6 @@ package net.irext.server.service.restapi;
 import net.irext.server.service.businesslogic.DecodeLogic;
 import net.irext.server.service.cache.IDecodeSessionRepository;
 import net.irext.server.service.cache.IIRBinaryRepository;
-import net.irext.server.service.mapper.RemoteIndexMapper;
 import net.irext.server.service.model.ACParameters;
 import net.irext.server.service.model.DecodeSession;
 import net.irext.server.service.model.RemoteIndex;
@@ -43,23 +42,38 @@ import java.text.SimpleDateFormat;
 @RestController
 @RequestMapping("/irext-server/decode")
 @Service("IRDecodeService")
+@SuppressWarnings("unused")
 public class IRDecodeService extends AbstractBaseService {
 
     private static final String TAG = IRDecodeService.class.getSimpleName();
 
-    private RemoteIndexMapper remoteIndexMapper;
-
-    @Autowired
     private ServletContext context;
 
-    @Autowired
     private IndexingLogic indexingLogic;
 
-    @Autowired
     private IIRBinaryRepository irBinaryRepository;
 
-    @Autowired
     private IDecodeSessionRepository decodeSessionRepository;
+
+    @Autowired
+    public void setContext(ServletContext context) {
+        this.context = context;
+    }
+
+    @Autowired
+    public void setIndexingLogic(IndexingLogic indexingLogic) {
+        this.indexingLogic = indexingLogic;
+    }
+
+    @Autowired
+    public void setIrBinaryRepository(IIRBinaryRepository irBinaryRepository) {
+        this.irBinaryRepository = irBinaryRepository;
+    }
+
+    @Autowired
+    public void setDecodeSessionRepository(IDecodeSessionRepository decodeSessionRepository) {
+        this.decodeSessionRepository = decodeSessionRepository;
+    }
 
     @PostMapping("/open")
     public StringResponse irOpen(HttpServletRequest request, @RequestBody OpenRequest openRequest) {
@@ -149,7 +163,7 @@ public class IRDecodeService extends AbstractBaseService {
             int changeWindDir = decodeRequest.getChangeWindDir();
             String sessionId = decodeRequest.getSessionId();
 
-            RemoteIndex cachedRemoteIndex = getCachedRemoteIndex(sessionId, remoteIndexId);;
+            RemoteIndex cachedRemoteIndex = getCachedRemoteIndex(sessionId, remoteIndexId);
             DecodeResponse response = new DecodeResponse();
 
             if (null == cachedRemoteIndex) {

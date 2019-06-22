@@ -12,6 +12,7 @@ import java.io.*;
  * Revision log:
  * 2017-04-14: created by strawmanbobi
  */
+@SuppressWarnings("unused")
 public class FileUtil {
 
     public static boolean write(File file, byte[] binaries) {
@@ -43,9 +44,13 @@ public class FileUtil {
         return false;
     }
 
-    public static boolean createDirs(String path) {
+    public static void createDirs(String path) throws FileNotFoundException {
         File file = new File(path);
-        return file.exists() || file.mkdir();
+        if (!file.exists()) {
+            if (!file.mkdir()) {
+                throw new FileNotFoundException();
+            }
+        }
     }
 
     public static byte[] getByteArrayFromFile(String fileName) {
@@ -68,7 +73,7 @@ public class FileUtil {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
             int count;
-            byte buffer[] = new byte[512];
+            byte[] buffer = new byte[512];
             while ((count = fis.read(buffer)) > 0) {
                 baos.write(buffer, 0, count);
             }
@@ -84,7 +89,7 @@ public class FileUtil {
     }
 
     private static void deleteAllFiles(File root) {
-        File files[] = root.listFiles();
+        File[] files = root.listFiles();
         if (files != null) {
             for (File f : files) {
                 if (f.isDirectory()) {

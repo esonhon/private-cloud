@@ -8,7 +8,6 @@ import net.irext.server.service.response.Status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Filename:       AbstractBaseService.java
@@ -20,6 +19,7 @@ import org.springframework.context.ApplicationContext;
  * Revision log:
  * 2017-04-27: created by strawmanbobi
  */
+@SuppressWarnings("unused")
 public abstract class AbstractBaseService implements TokenValidation {
 
     protected static Log log = LogFactory.getLog(AbstractBaseService.class);
@@ -59,9 +59,7 @@ public abstract class AbstractBaseService implements TokenValidation {
 
         try {
             r = c.newInstance();
-        } catch (InstantiationException e) {
-            log.error("Error when new instance of class: " + c.getName(), e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             log.error("Error when new instance of class: " + c.getName(), e);
         }
 
@@ -84,9 +82,7 @@ public abstract class AbstractBaseService implements TokenValidation {
         Status status = new Status();
         try {
             r = c.newInstance();
-        } catch (InstantiationException e) {
-            log.error("Error when new instance of class: " + c.getName(), e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             log.error("Error when new instance of class: " + c.getName(), e);
         }
         status.setCode(Constants.ERROR_CODE_AUTH_FAILURE);
@@ -98,7 +94,6 @@ public abstract class AbstractBaseService implements TokenValidation {
 
     private Status validateUserToken(Integer userId, String token) {
         Status status = new Status();
-        ApplicationContext applicationContext;
 
         if (userAppRepository.find(userId).equals(token)) {
             status.setCode(Constants.ERROR_CODE_SUCCESS);

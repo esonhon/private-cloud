@@ -18,7 +18,7 @@ public class LoggerUtil {
     private Logger logger;
     private static final int MODE = 0;
 
-    LoggerUtil() {
+    private LoggerUtil() {
         this.logger = LogManager.getLogger(LoggerUtil.class.getSimpleName());
     }
 

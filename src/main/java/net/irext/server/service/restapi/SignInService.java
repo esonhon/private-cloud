@@ -8,7 +8,6 @@ import net.irext.server.service.request.AppSignInRequest;
 import net.irext.server.service.response.LoginResponse;
 import net.irext.server.service.response.Status;
 import net.irext.server.service.restapi.base.AbstractBaseService;
-import net.irext.server.service.utils.LoggerUtil;
 import net.irext.server.service.utils.MD5Util;
 import net.irext.server.service.utils.VeDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,15 +34,24 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/irext-server/app")
 @Service("SignInService")
+@SuppressWarnings("unused")
 public class SignInService extends AbstractBaseService {
 
     private static final String TAG = SignInService.class.getSimpleName();
 
-    @Autowired
     private UserLoginLogic loginLogic;
 
-    @Autowired
     private IUserAppRepository userAppRepository;
+
+    @Autowired
+    public void setLoginLogic(UserLoginLogic loginLogic) {
+        this.loginLogic = loginLogic;
+    }
+
+    @Autowired
+    public void setUserAppRepository(IUserAppRepository userAppRepository) {
+        this.userAppRepository = userAppRepository;
+    }
 
     @PostMapping("/app_login")
     public LoginResponse signIn(HttpServletRequest request, @RequestBody AppSignInRequest appSignInRequest) {

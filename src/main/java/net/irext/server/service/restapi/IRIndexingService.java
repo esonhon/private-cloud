@@ -2,7 +2,6 @@ package net.irext.server.service.restapi;
 
 import net.irext.server.service.Constants;
 import net.irext.server.service.businesslogic.IndexingLogic;
-import net.irext.server.service.mapper.RemoteIndexMapper;
 import net.irext.server.service.model.*;
 import net.irext.server.service.request.*;
 import net.irext.server.service.response.*;
@@ -32,17 +31,20 @@ import java.util.List;
 @RestController
 @RequestMapping("/irext-server/indexing")
 @Service("IRIndexingService")
+@SuppressWarnings("unused")
 public class IRIndexingService extends AbstractBaseService {
 
     private static final String TAG = IRIndexingService.class.getSimpleName();
 
-    @Autowired
-    private ServletContext context;
-
-    @Autowired
     private IndexingLogic indexingLogic;
 
-    public IRIndexingService(RemoteIndexMapper remoteIndexMapper) {
+    @Autowired
+    public void setContext(ServletContext context) {
+    }
+
+    @Autowired
+    public void setIndexingLogic(IndexingLogic indexingLogic) {
+        this.indexingLogic = indexingLogic;
     }
 
     @PostMapping("/list_categories")
@@ -54,9 +56,7 @@ public class IRIndexingService extends AbstractBaseService {
             String token = listCategoriesRequest.getToken();
             int from = listCategoriesRequest.getFrom();
             int count = listCategoriesRequest.getCount();
-            int lang = Constants.LANG_ZH_CN;
-
-            lang = getLanguage(userLang);
+            int lang = getLanguage(userLang);
 
             CategoriesResponse response = validateToken(id, token, CategoriesResponse.class);
             if (response.getStatus().getCode() == Constants.ERROR_CODE_AUTH_FAILURE) {
@@ -89,9 +89,7 @@ public class IRIndexingService extends AbstractBaseService {
             int categoryId = listBrandsRequest.getCategoryId();
             int from = listBrandsRequest.getFrom();
             int count = listBrandsRequest.getCount();
-            int lang = Constants.LANG_ZH_CN;
-
-            lang = getLanguage(userLang);
+            int lang = getLanguage(userLang);
 
             BrandsResponse response = validateToken(id, token, BrandsResponse.class);
             if (response.getStatus().getCode() == Constants.ERROR_CODE_AUTH_FAILURE) {
@@ -237,8 +235,6 @@ public class IRIndexingService extends AbstractBaseService {
                 lang = Constants.LANG_EN;
             } else if (userLang.equals("zh-TW")) {
                 lang = Constants.LANG_TW_CN;
-            } else {
-                lang = Constants.LANG_ZH_CN;
             }
         }
         return lang;
