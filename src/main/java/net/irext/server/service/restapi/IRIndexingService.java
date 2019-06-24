@@ -23,7 +23,7 @@ import java.util.List;
  * Revised:        Date: 2019-06-08
  * Revision:       Revision: 1.0
  * <p>
- * Description:    IRext Indexing Webservice
+ * Description:    IRext indexing service
  * <p>
  * Revision log:
  * 2019-06-08: created by strawmanbobi

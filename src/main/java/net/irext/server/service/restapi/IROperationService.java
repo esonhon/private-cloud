@@ -6,10 +6,7 @@ import net.irext.server.service.cache.IIRBinaryRepository;
 import net.irext.server.service.model.ACParameters;
 import net.irext.server.service.model.DecodeSession;
 import net.irext.server.service.model.RemoteIndex;
-import net.irext.server.service.request.CloseRequest;
-import net.irext.server.service.request.DecodeRequest;
-import net.irext.server.service.request.GetACParametersRequest;
-import net.irext.server.service.request.OpenRequest;
+import net.irext.server.service.request.*;
 import net.irext.server.service.response.*;
 import net.irext.server.service.utils.LoggerUtil;
 import net.irext.server.service.utils.MD5Util;
@@ -18,6 +15,8 @@ import net.irext.server.service.restapi.base.AbstractBaseService;
 import net.irext.server.sdk.bean.ACStatus;
 import net.irext.server.sdk.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,26 +25,33 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+
+import static org.apache.commons.io.filefilter.DirectoryFileFilter.DIRECTORY;
 
 /**
  * Filename:       IRDecodeService.java
  * Revised:        Date: 2018-12-16
  * Revision:       Revision: 1.0
  * <p>
- * Description:    IRext decode service
+ * Description:    IRext operation service
  * <p>
  * Revision log:
  * 2018-12-16: created by strawmanbobi
  */
 
 @RestController
-@RequestMapping("/irext-server/decode")
+@RequestMapping("/irext-server/operation")
 @Service("IRDecodeService")
 @SuppressWarnings("unused")
-public class IRDecodeService extends AbstractBaseService {
+public class IROperationService extends AbstractBaseService {
 
-    private static final String TAG = IRDecodeService.class.getSimpleName();
+    private static final String TAG = IROperationService.class.getSimpleName();
 
     private ServletContext context;
 
@@ -73,6 +79,23 @@ public class IRDecodeService extends AbstractBaseService {
     @Autowired
     public void setDecodeSessionRepository(IDecodeSessionRepository decodeSessionRepository) {
         this.decodeSessionRepository = decodeSessionRepository;
+    }
+
+    @PostMapping("/download_bin")
+    public ResponseEntity<InputStreamResource> downloadBin(
+            @RequestBody DownloadBinaryRequest downloadBinaryRequest) throws IOException {
+
+        FileInputStream inputStream = indexingLogic.getDownloadStream(downloadBinaryRequest.getIndexId());
+        InputStreamResource resource = new InputStreamResource(inputStream);
+        String fileName = "";
+        int fileLength = 0;
+
+        return ResponseEntity.ok()
+                // Content-Disposition
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileName)
+                // Contet-Length
+                .contentLength(fileLength)
+                .body(resource);
     }
 
     @PostMapping("/open")
