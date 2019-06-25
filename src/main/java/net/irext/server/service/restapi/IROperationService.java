@@ -85,15 +85,20 @@ public class IROperationService extends AbstractBaseService {
     public ResponseEntity<InputStreamResource> downloadBin(
             @RequestBody DownloadBinaryRequest downloadBinaryRequest) throws IOException {
 
-        FileInputStream inputStream = indexingLogic.getDownloadStream(downloadBinaryRequest.getIndexId());
-        InputStreamResource resource = new InputStreamResource(inputStream);
-        String fileName = "";
-        int fileLength = 0;
+        File downloadFile = indexingLogic.getDownloadStream(downloadBinaryRequest.getIndexId());
+
+        if (null == downloadFile) {
+            return ResponseEntity.ok().body(null);
+        }
+
+        InputStreamResource resource = new InputStreamResource(new FileInputStream(downloadFile));
+        String fileName = downloadFile.getName();
+        long fileLength = downloadFile.length();
 
         return ResponseEntity.ok()
                 // Content-Disposition
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + fileName)
-                // Contet-Length
+                // Content-Length
                 .contentLength(fileLength)
                 .body(resource);
     }

@@ -6,6 +6,7 @@ import net.irext.server.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -35,6 +36,9 @@ public class IndexingLogic {
 
     @Autowired
     private RemoteIndexMapper remoteIndexMapper;
+
+    private static final String IR_BIN_FILE_PREFIX = "irda_";
+    private static final String IR_BIN_FILE_SUFFIX = ".bin";
 
     public RemoteIndex getRemoteIndex(int indexId) {
         List<RemoteIndex> remoteIndexList = remoteIndexMapper.getRemoteIndexById(indexId);
@@ -92,5 +96,18 @@ public class IndexingLogic {
             remoteIndexList = remoteIndexMapper.listRemoteIndexByBrand(categoryId, brandId, from, count);
         }
         return remoteIndexList;
+    }
+
+    public File getDownloadStream(int remoteIndexId) {
+        List<RemoteIndex> remoteIndexList = remoteIndexMapper.getRemoteIndexById(remoteIndexId);
+        if (null == remoteIndexList || 0 == remoteIndexList.size()) {
+            return null;
+        }
+
+        RemoteIndex remote = remoteIndexList.get(0);
+        String downloadPath = "/data/irext/";
+        String fileName = IR_BIN_FILE_PREFIX + remote.getRemoteMap() + IR_BIN_FILE_SUFFIX;
+        String localFilePath = downloadPath + fileName;
+        return new File(localFilePath);
     }
 }
