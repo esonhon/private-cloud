@@ -32,7 +32,7 @@ public class IndexingLogic {
     private CityMapper cityMapper;
 
     @Autowired
-    private OperatorMapper operatorMapper;
+    private StbOperatorMapper stbOperatorMapper;
 
     @Autowired
     private RemoteIndexMapper remoteIndexMapper;
@@ -81,11 +81,12 @@ public class IndexingLogic {
     }
 
     public List<City> listCities(String provincePrefix) {
-        return cityMapper.listCities(provincePrefix);
+        String provincePrefixText = provincePrefix + "__00";
+        return cityMapper.listCities(provincePrefixText);
     }
 
     public List<StbOperator> listOperators(String cityCode) {
-        return operatorMapper.listOperators(cityCode);
+        return stbOperatorMapper.listOperators(cityCode);
     }
 
     public List<RemoteIndex> listRemoteIndexes(int categoryId, int brandId, String cityCode, int from, int count) {
@@ -105,7 +106,7 @@ public class IndexingLogic {
         }
 
         RemoteIndex remote = remoteIndexList.get(0);
-        String downloadPath = "/data/irext/";
+        String downloadPath = "/home/strawmanbobi/";
         String fileName = IR_BIN_FILE_PREFIX + remote.getRemoteMap() + IR_BIN_FILE_SUFFIX;
         String localFilePath = downloadPath + fileName;
         return new File(localFilePath);

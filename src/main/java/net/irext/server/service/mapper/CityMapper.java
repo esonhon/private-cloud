@@ -23,7 +23,7 @@ public interface CityMapper {
     @ResultMap("BaseResultMap")
     List<City> listProvinces();
 
-    @Select("SELECT * FROM city WHERE code like '#{provincePrefix}__00' and code not like '__0000'")
+    @Select("SELECT * FROM city WHERE code LIKE #{provincePrefix} AND code NOT LIKE '__0000'")
     @ResultMap("BaseResultMap")
     List<City> listCities(String provincePrefix);
 }
