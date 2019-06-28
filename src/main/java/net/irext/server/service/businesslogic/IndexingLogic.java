@@ -6,7 +6,6 @@ import net.irext.server.service.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -22,20 +21,40 @@ import java.util.List;
 @Controller
 public class IndexingLogic {
 
-    @Autowired
     private CategoryMapper categoryMapper;
 
-    @Autowired
     private BrandMapper brandMapper;
 
-    @Autowired
     private CityMapper cityMapper;
 
-    @Autowired
     private StbOperatorMapper stbOperatorMapper;
 
-    @Autowired
     private RemoteIndexMapper remoteIndexMapper;
+
+    @Autowired
+    public void setCategoryMapper(CategoryMapper categoryMapper) {
+        this.categoryMapper = categoryMapper;
+    }
+
+    @Autowired
+    public void setBrandMapper(BrandMapper brandMapper) {
+        this.brandMapper = brandMapper;
+    }
+
+    @Autowired
+    public void setCityMapper(CityMapper cityMapper) {
+        this.cityMapper = cityMapper;
+    }
+
+    @Autowired
+    public void setStbOperatorMapper(StbOperatorMapper stbOperatorMapper) {
+        this.stbOperatorMapper = stbOperatorMapper;
+    }
+
+    @Autowired
+    public void setRemoteIndexMapper(RemoteIndexMapper remoteIndexMapper) {
+        this.remoteIndexMapper = remoteIndexMapper;
+    }
 
     private static final String IR_BIN_FILE_PREFIX = "irda_";
     private static final String IR_BIN_FILE_SUFFIX = ".bin";
@@ -97,18 +116,5 @@ public class IndexingLogic {
             remoteIndexList = remoteIndexMapper.listRemoteIndexByBrand(categoryId, brandId, from, count);
         }
         return remoteIndexList;
-    }
-
-    public File getDownloadStream(int remoteIndexId) {
-        List<RemoteIndex> remoteIndexList = remoteIndexMapper.getRemoteIndexById(remoteIndexId);
-        if (null == remoteIndexList || 0 == remoteIndexList.size()) {
-            return null;
-        }
-
-        RemoteIndex remote = remoteIndexList.get(0);
-        String downloadPath = "/home/strawmanbobi/";
-        String fileName = IR_BIN_FILE_PREFIX + remote.getRemoteMap() + IR_BIN_FILE_SUFFIX;
-        String localFilePath = downloadPath + fileName;
-        return new File(localFilePath);
     }
 }

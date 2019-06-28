@@ -1,6 +1,6 @@
 package net.irext.server.service.restapi;
 
-import net.irext.server.service.businesslogic.DecodeLogic;
+import net.irext.server.service.businesslogic.OperationLogic;
 import net.irext.server.service.cache.IDecodeSessionRepository;
 import net.irext.server.service.cache.IIRBinaryRepository;
 import net.irext.server.service.model.ACParameters;
@@ -26,13 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-
-import static org.apache.commons.io.filefilter.DirectoryFileFilter.DIRECTORY;
 
 /**
  * Filename:       IRDecodeService.java
@@ -57,6 +54,8 @@ public class IROperationService extends AbstractBaseService {
 
     private IndexingLogic indexingLogic;
 
+    private OperationLogic operationLogic;
+
     private IIRBinaryRepository irBinaryRepository;
 
     private IDecodeSessionRepository decodeSessionRepository;
@@ -69,6 +68,11 @@ public class IROperationService extends AbstractBaseService {
     @Autowired
     public void setIndexingLogic(IndexingLogic indexingLogic) {
         this.indexingLogic = indexingLogic;
+    }
+
+    @Autowired
+    public void setOperationLogic(OperationLogic operationLogic) {
+        this.operationLogic = operationLogic;
     }
 
     @Autowired
@@ -85,7 +89,7 @@ public class IROperationService extends AbstractBaseService {
     public ResponseEntity<InputStreamResource> downloadBin(
             @RequestBody DownloadBinaryRequest downloadBinaryRequest) throws IOException {
 
-        File downloadFile = indexingLogic.getDownloadStream(downloadBinaryRequest.getIndexId());
+        File downloadFile = operationLogic.getDownloadFile(context, downloadBinaryRequest.getIndexId());
 
         if (null == downloadFile) {
             return ResponseEntity.ok().body(null);
@@ -122,7 +126,7 @@ public class IROperationService extends AbstractBaseService {
                         remoteIndex.getRemoteMap());
             }
             RemoteIndex cachedRemoteIndex =
-                    DecodeLogic.getInstance().openIRBinary(context, irBinaryRepository, remoteIndex);
+                    OperationLogic.getInstance().openIRBinary(context, irBinaryRepository, remoteIndex);
 
             if (null != cachedRemoteIndex) {
                 LoggerUtil.getInstance().trace(TAG, "binary content fetched : " +
@@ -170,7 +174,7 @@ public class IROperationService extends AbstractBaseService {
                 return response;
             }
 
-            ACParameters acParameters = DecodeLogic.getInstance().getACParameters(cachedRemoteIndex, mode);
+            ACParameters acParameters = OperationLogic.getInstance().getACParameters(cachedRemoteIndex, mode);
 
             response.setStatus(new Status(Constants.ERROR_CODE_SUCCESS, Constants.ERROR_CODE_SUCESS_TEXT));
             response.setEntity(acParameters);
@@ -201,7 +205,7 @@ public class IROperationService extends AbstractBaseService {
                 return response;
             }
 
-            int[] irArray = DecodeLogic.getInstance().decode(
+            int[] irArray = OperationLogic.getInstance().decode(
                     cachedRemoteIndex,
                     acStatus,
                     keyCode,
@@ -221,7 +225,7 @@ public class IROperationService extends AbstractBaseService {
         try {
             String sessionId = closeRequest.getSessionId();
             ServiceResponse response = new ServiceResponse();
-            DecodeLogic.getInstance().close(decodeSessionRepository, sessionId);
+            OperationLogic.getInstance().close(decodeSessionRepository, sessionId);
             return response;
         } catch (Exception e) {
             e.printStackTrace();

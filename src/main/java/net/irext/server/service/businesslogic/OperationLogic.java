@@ -4,6 +4,7 @@ import com.squareup.okhttp.*;
 import net.irext.server.sdk.bean.TemperatureRange;
 import net.irext.server.service.cache.IDecodeSessionRepository;
 import net.irext.server.service.cache.IIRBinaryRepository;
+import net.irext.server.service.mapper.RemoteIndexMapper;
 import net.irext.server.service.model.ACParameters;
 import net.irext.server.service.model.RemoteIndex;
 import net.irext.server.service.utils.FileUtil;
@@ -12,6 +13,8 @@ import net.irext.server.service.utils.MD5Util;
 import net.irext.server.sdk.IRDecode;
 import net.irext.server.sdk.bean.ACStatus;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 
 import javax.servlet.ServletContext;
 import java.io.File;
@@ -19,9 +22,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
+import java.util.List;
 
 /**
- * Filename:       DecodeLogic
+ * Filename:       OperationLogic
  * Revised:        Date: 2018-12-30
  * Revision:       Revision: 1.0
  * <p>
@@ -31,9 +35,10 @@ import java.security.MessageDigest;
  * 2018-12-30: created by strawmanbobi
  */
 @SuppressWarnings("Duplicates")
-public class DecodeLogic {
+@Controller
+public class OperationLogic {
 
-    private static final String TAG = DecodeLogic.class.getSimpleName();
+    private static final String TAG = OperationLogic.class.getSimpleName();
     private static final boolean DEBUG = false;
 
     private static final String IR_BIN_FILE_PREFIX = "irda_";
@@ -41,13 +46,20 @@ public class DecodeLogic {
 
     private static final String IR_BIN_DOWNLOAD_PREFIX = "http://irext-debug.oss-cn-hangzhou.aliyuncs.com/";
 
-    private static DecodeLogic decodeLogic;
+    private static OperationLogic operationLogic;
 
-    public static DecodeLogic getInstance() {
-        if (null == decodeLogic) {
-            decodeLogic = new DecodeLogic();
+    public static OperationLogic getInstance() {
+        if (null == operationLogic) {
+            operationLogic = new OperationLogic();
         }
-        return decodeLogic;
+        return operationLogic;
+    }
+
+    private RemoteIndexMapper remoteIndexMapper;
+
+    @Autowired
+    public void setRemoteIndexMapper(RemoteIndexMapper remoteIndexMapper) {
+        this.remoteIndexMapper = remoteIndexMapper;
     }
 
     public RemoteIndex openIRBinary(ServletContext context, IIRBinaryRepository irBinaryRepository,
@@ -258,5 +270,24 @@ public class DecodeLogic {
 
         Response response = new OkHttpClient().newCall(request).execute();
         return response.body().byteStream();
+    }
+
+    public File getDownloadFile(ServletContext context, int remoteIndexId) {
+        try {
+            List<RemoteIndex> remoteIndexList = remoteIndexMapper.getRemoteIndexById(remoteIndexId);
+            if (null == remoteIndexList || 0 == remoteIndexList.size()) {
+                return null;
+            }
+            RemoteIndex remoteIndex = remoteIndexList.get(0);
+            String downloadPath = context.getRealPath("") + "bin_cache" + File.separator;
+            String fileName = IR_BIN_FILE_PREFIX + remoteIndex.getRemoteMap() + IR_BIN_FILE_SUFFIX;
+            String localFilePath = downloadPath + fileName;
+            File binFile = new File(localFilePath);
+            getFile(binFile, downloadPath, fileName, remoteIndex.getBinaryMd5().toUpperCase());
+            return binFile;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
