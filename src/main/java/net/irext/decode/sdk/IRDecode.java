@@ -1,4 +1,4 @@
-package net.irext.server.sdk;
+package net.irext.decode.sdk;
 
 import net.irext.server.sdk.bean.ACStatus;
 import net.irext.server.sdk.bean.TemperatureRange;

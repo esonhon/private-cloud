@@ -10,7 +10,7 @@ import net.irext.server.service.model.RemoteIndex;
 import net.irext.server.service.utils.FileUtil;
 import net.irext.server.service.utils.LoggerUtil;
 import net.irext.server.service.utils.MD5Util;
-import net.irext.server.sdk.IRDecode;
+import net.irext.decode.sdk.IRDecode;
 import net.irext.server.sdk.bean.ACStatus;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
