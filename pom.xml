@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.irext.server</groupId>
-    <artifactId>irext-private-server</artifactId>
+    <artifactId>private-server</artifactId>
     <version>0.2.1</version>
     <packaging>jar</packaging>
 
